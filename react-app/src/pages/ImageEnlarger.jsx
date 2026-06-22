@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import Navbar from '../components/Navbar'
+import Upscaler from 'upscaler'
 import '../styles/image-enlarger.css'
 
 export default function ImageEnlarger() {
@@ -239,7 +240,7 @@ export default function ImageEnlarger() {
           }
           setProgress(85, 'Finalizing…')
 
-        } else {
+        } else if (state.quality === 'progressive') {
           // Progressive multi-step + stronger unsharp mask
           setProgress(10, 'Step 1 — Progressive upscale…')
           canvas = document.createElement('canvas')
@@ -280,6 +281,58 @@ export default function ImageEnlarger() {
             await applyUnsharpMask(canvas, state.sharpen * 0.4, blurRadius * 0.5)
           }
           setProgress(88, 'Finalizing…')
+
+        } else if (state.quality === 'ai') {
+          setProgress(10, 'Loading AI Model (Real-ESRGAN)…')
+          
+          // The default model is a 2x upscaler
+          const upscaler = new Upscaler()
+          
+          let currentImg = src
+          let currentW = src.naturalWidth
+          let currentH = src.naturalHeight
+          
+          // Iteratively upscale by 2x until we reach or exceed the target resolution
+          let iter = 1
+          while (currentW < targetW || currentH < targetH) {
+            setProgress(10 + (iter * 20), `AI Upscaling (Pass ${iter}) — This may take a while…`)
+            
+            // To prevent crashing the browser on large images, use patchSize
+            const upscaledSrc = await upscaler.upscale(currentImg, {
+              patchSize: 64,
+              padding: 2,
+            })
+            
+            // Load the upscaled base64 into an Image element for the next pass or final draw
+            currentImg = await new Promise((resolve) => {
+              const img = new Image()
+              img.onload = () => resolve(img)
+              img.src = upscaledSrc
+            })
+            
+            currentW = currentImg.naturalWidth
+            currentH = currentImg.naturalHeight
+            iter++
+            
+            // Limit to max 3 passes (8x upscale natively) to prevent infinite loops / crashes
+            if (iter > 3) break
+          }
+          
+          setProgress(85, 'Rendering final size…')
+          
+          // Draw the (potentially slightly larger) AI image onto the exact target canvas size
+          canvas = document.createElement('canvas')
+          canvas.width = targetW
+          canvas.height = targetH
+          const ctx = canvas.getContext('2d')
+          ctx.imageSmoothingEnabled = true
+          ctx.imageSmoothingQuality = 'high'
+          ctx.drawImage(currentImg, 0, 0, targetW, targetH)
+          
+          if (state.sharpen > 0) {
+            setProgress(90, 'Applying final sharpness pass…')
+            await applyUnsharpMask(canvas, state.sharpen * 0.5, blurRadius * 0.8)
+          }
         }
 
         setProgress(95, 'Generating preview…')
@@ -455,7 +508,8 @@ export default function ImageEnlarger() {
                   {[
                     { q: 'nearest',     icon: 'ph-grid-four',   label: 'Sharp / Pixel Art',    desc: 'Nearest-neighbor — crisp edges, good for logos' },
                     { q: 'smooth',      icon: 'ph-drop-half',   label: 'Smooth + Sharpen',     desc: 'Bilinear upscale + unsharp mask (recommended)' },
-                    { q: 'progressive', icon: 'ph-magic-wand',  label: 'Progressive + Sharpen',desc: '1.5× multi-step + double sharpening pass (best)' },
+                    { q: 'progressive', icon: 'ph-magic-wand',  label: 'Progressive + Sharpen',desc: '1.5× multi-step + double sharpening pass' },
+                    { q: 'ai',          icon: 'ph-brain',       label: 'AI Upscale (ESRGAN)',  desc: 'Neural network — hallucinates lost details (slowest)' },
                   ].map(({ q, icon, label, desc }) => (
                     <button
                       key={q}
