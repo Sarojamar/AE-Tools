@@ -16,7 +16,7 @@ export default function ImageEnlarger() {
       enlargedCanvas: null,
       scale: 2,
       customScale: 2,
-      quality: 'smooth',
+      quality: 'ai',
       format: 'png',
       jpegQuality: 92,
       sharpen: 60,       // 0–200 unsharp mask amount
@@ -126,6 +126,8 @@ export default function ImageEnlarger() {
         if ($('el-api-key-row')) { $('el-api-key-row').style.display = (state.quality === 'ai') ? 'flex' : 'none' }
       }
     })
+
+    // ── Preview Zoom Slider is defined later with Panning ──
 
     // ── API Key Input ─────────────────────────────────────
     if ($('inp-api-key')) {
@@ -389,10 +391,15 @@ export default function ImageEnlarger() {
       toast('Download started!', 'success')
     }
 
-    // ── Compare slider drag ───────────────────────────────
+    // ── Compare slider drag & Panning ─────────────────────
     const compareWrap = $('el-compare-wrap')
+    const compareInner = $('el-compare-inner')
     const afterEl = $('el-compare-after')
     const handle = $('el-compare-handle')
+
+    let panX = 0, panY = 0
+    let startPanX = 0, startPanY = 0
+    let isPanning = false
 
     function setCompare(x) {
       const rect = compareWrap.getBoundingClientRect()
@@ -401,13 +408,70 @@ export default function ImageEnlarger() {
       afterEl.style.clipPath = `inset(0 0 0 ${pct}%)`
       handle.style.left = pct + '%'
     }
-    handle.onmousedown = e => { e.preventDefault(); state.dragging = true }
-    compareWrap.onmousedown = e => { state.dragging = true; setCompare(e.clientX) }
-    document.onmousemove = e => { if (state.dragging) setCompare(e.clientX) }
-    document.onmouseup   = () => { state.dragging = false }
-    handle.ontouchstart = () => { state.dragging = true }
-    document.ontouchmove = e => { if (state.dragging && e.touches[0]) setCompare(e.touches[0].clientX) }
-    document.ontouchend  = () => { state.dragging = false }
+
+    function updateTransform() {
+      const z = $('sl-preview-zoom') ? parseFloat($('sl-preview-zoom').value) : 1
+      if (compareInner) {
+        compareInner.style.transform = `scale(${z}) translate(${panX / z}px, ${panY / z}px)`
+      }
+    }
+
+    if ($('sl-preview-zoom')) {
+      $('sl-preview-zoom').oninput = e => {
+        $('val-preview-zoom').innerText = parseFloat(e.target.value).toFixed(1) + 'x'
+        updateTransform()
+      }
+    }
+
+    handle.onmousedown = e => { e.preventDefault(); e.stopPropagation(); state.dragging = true }
+    handle.ontouchstart = e => { e.stopPropagation(); state.dragging = true }
+
+    compareWrap.onmousedown = e => { 
+      e.preventDefault()
+      if (e.target === handle) return
+      isPanning = true
+      compareWrap.style.cursor = 'grabbing'
+      startPanX = e.clientX - panX
+      startPanY = e.clientY - panY
+    }
+    
+    document.addEventListener('mousemove', e => { 
+      if (state.dragging) setCompare(e.clientX) 
+      if (isPanning) {
+        panX = e.clientX - startPanX
+        panY = e.clientY - startPanY
+        updateTransform()
+      }
+    })
+    
+    document.addEventListener('mouseup', () => { 
+      state.dragging = false 
+      isPanning = false
+      if (compareWrap) compareWrap.style.cursor = 'grab'
+    })
+    
+    compareWrap.ontouchstart = e => {
+      if (e.target === handle) return
+      if (e.touches.length === 1) {
+        isPanning = true
+        startPanX = e.touches[0].clientX - panX
+        startPanY = e.touches[0].clientY - panY
+      }
+    }
+    
+    document.addEventListener('touchmove', e => { 
+      if (state.dragging && e.touches[0]) setCompare(e.touches[0].clientX) 
+      if (isPanning && e.touches[0]) {
+        panX = e.touches[0].clientX - startPanX
+        panY = e.touches[0].clientY - startPanY
+        updateTransform()
+      }
+    }, { passive: false })
+    
+    document.addEventListener('touchend', () => { 
+      state.dragging = false 
+      isPanning = false
+    })
 
   }, [])
 
@@ -421,11 +485,12 @@ export default function ImageEnlarger() {
         <div className="el-header-inner">
           <div className="el-title-block">
             <span className="el-badge">
-              <i className="ph ph-arrows-out"></i> Browser-Native · Zero Uploads
+              <i className="ph ph-arrows-out"></i> Browser &amp; Cloud Hybrid
             </span>
-            <h1>Image<br /><em>Enlarger</em></h1>
+            <h1>AI Image<br /><em>Enlarger</em></h1>
             <p>
-              Upscale any image up to 16× with smooth bilinear or progressive multi-step interpolation — entirely in your browser, no server needed.
+              Upscale any image up to 16×. Use our Cutout.pro AI integration for incredible
+              face and detail enhancements, or use local bilinear interpolation.
             </p>
           </div>
         </div>
@@ -456,14 +521,16 @@ export default function ImageEnlarger() {
               </button>
             </div>
 
-            <div className="el-compare-wrap" id="el-compare-wrap">
-              <div className="el-compare-before">
-                <img id="el-before-img" alt="Original" />
+            <div className="el-compare-wrap" id="el-compare-wrap" style={{ overflow: 'hidden', position: 'relative', cursor: 'grab' }}>
+              <div id="el-compare-inner" style={{ width: '100%', height: '100%', transformOrigin: 'center center', transition: 'transform 0.1s ease-out' }}>
+                <div className="el-compare-before">
+                  <img id="el-before-img" alt="Original" />
+                </div>
+                <div className="el-compare-after" id="el-compare-after" style={{ clipPath: 'inset(0 0 0 50%)' }}>
+                  <img id="el-after-img" alt="Enlarged" />
+                </div>
               </div>
-              <div className="el-compare-after" id="el-compare-after" style={{ clipPath: 'inset(0 0 0 50%)' }}>
-                <img id="el-after-img" alt="Enlarged" />
-              </div>
-              <div className="el-compare-handle" id="el-compare-handle"></div>
+              <div className="el-compare-handle" id="el-compare-handle" style={{ cursor: 'ew-resize' }}></div>
               <span className="el-compare-label before">ORIGINAL</span>
               <span className="el-compare-label after">ENLARGED</span>
             </div>
@@ -480,6 +547,13 @@ export default function ImageEnlarger() {
                 <span className="el-info-cell-sub" id="el-new-size">—</span>
               </div>
             </div>
+
+            <div className="el-preview-zoom-bar" style={{ marginTop: '1rem', background: 'rgba(0,0,0,0.2)', padding: '0.75rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <label style={{ fontSize: '0.8rem', color: '#a78bfa', fontWeight: 'bold' }}><i className="ph ph-magnifying-glass-plus"></i> Preview Zoom</label>
+              <input type="range" id="sl-preview-zoom" min="1" max="4" step="0.1" defaultValue="1" style={{ flexGrow: 1 }} />
+              <span id="val-preview-zoom" style={{ fontSize: '0.85rem', minWidth: '2.5rem', textAlign: 'right' }}>1.0x</span>
+            </div>
+
           </div>
 
           {/* Right — Settings */}
@@ -527,11 +601,11 @@ export default function ImageEnlarger() {
                     { q: 'nearest',     icon: 'ph-grid-four',   label: 'Sharp / Pixel Art',    desc: 'Nearest-neighbor — crisp edges, good for logos' },
                     { q: 'smooth',      icon: 'ph-drop-half',   label: 'Smooth + Sharpen',     desc: 'Bilinear upscale + unsharp mask (recommended)' },
                     { q: 'progressive', icon: 'ph-magic-wand',  label: 'Progressive + Sharpen',desc: '1.5× multi-step + double sharpening pass' },
-                    { q: 'ai',          icon: 'ph-brain',       label: 'AI Upscale (ESRGAN)',  desc: 'Neural network — hallucinates lost details (slowest)' },
+                    { q: 'ai',          icon: 'ph-brain',       label: 'AI Upscale (ESRGAN)',  desc: 'Neural network — cloud processing for best detail' },
                   ].map(({ q, icon, label, desc }) => (
                     <button
                       key={q}
-                      className={`el-quality-btn${q === 'smooth' ? ' active' : ''}`}
+                      className={`el-quality-btn${q === 'ai' ? ' active' : ''}`}
                       data-quality={q}
                     >
                       <i className={`ph ${icon}`}></i>

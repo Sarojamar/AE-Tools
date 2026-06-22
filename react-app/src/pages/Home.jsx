@@ -325,17 +325,16 @@ export default function Home() {
                 </div>
               </div>
               <div className="tool-info">
-                <h2>Image Enlarger</h2>
+                <h2>AI Image Enlarger</h2>
                 <p>
-                  Upscale any photo or graphic up to 16× its original size. Choose between
-                  sharp pixel-art mode, smooth bilinear, or progressive multi-step interpolation
-                  for best quality — all inside your browser.
+                  Upscale any photo up to 16× its original size. Use our Cutout.pro AI integration 
+                  for high-definition face enhancement, or choose between crisp pixel-art and smooth bilinear modes.
                 </p>
               </div>
               <div className="feature-tags">
+                <span className="feature-tag">Cloud AI Upscale</span>
                 <span className="feature-tag">Up to 16× Scale</span>
-                <span className="feature-tag">3 Quality Modes</span>
-                <span className="feature-tag">PNG / JPEG / WEBP</span>
+                <span className="feature-tag">4 Quality Modes</span>
               </div>
             </div>
             <div className="btn-arrow">Open Enlarger <i className="ph ph-arrow-right"></i></div>
