@@ -84,33 +84,6 @@ export default function Navbar() {
           <div className="logo-icon">A</div>
           <span className="logo-text">Amrit <span>Enterprises</span></span>
         </Link>
-
-        <div
-          ref={triggerRef}
-          className={`nav-tools-trigger${dropdownOpen ? ' open' : ''}`}
-          onClick={(e) => { e.stopPropagation(); setDropdownOpen(o => !o) }}
-        >
-          <i className="ph ph-grid-four nav-icon"></i>
-          <span>All Tools</span>
-          <i className="ph ph-caret-down" id="tools-caret"></i>
-
-          <div className="tools-dropdown">
-            {TOOLS.map(t => (
-              <Link
-                key={t.href}
-                to={t.href}
-                className="tool-item"
-                onClick={() => setDropdownOpen(false)}
-              >
-                <i className={t.icon}></i>
-                <div>
-                  <strong>{t.label}</strong>
-                  <p>{t.desc}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
       </div>
 
       <div className="nav-center">
