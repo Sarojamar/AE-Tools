@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react'
 import Navbar from '../components/Navbar'
-import Upscaler from 'upscaler'
 import '../styles/image-enlarger.css'
 
 export default function ImageEnlarger() {
@@ -124,8 +123,15 @@ export default function ImageEnlarger() {
         const def = defaults[state.quality] ?? 60
         state.sharpen = def
         if ($('sl-sharpen')) { $('sl-sharpen').value = def; $('val-sharpen').innerText = def }
+        if ($('el-api-key-row')) { $('el-api-key-row').style.display = (state.quality === 'ai') ? 'flex' : 'none' }
       }
     })
+
+    // ── API Key Input ─────────────────────────────────────
+    if ($('inp-api-key')) {
+      $('inp-api-key').value = localStorage.getItem('cutout_api_key') || ''
+      $('inp-api-key').oninput = e => localStorage.setItem('cutout_api_key', e.target.value)
+    }
 
     // ── Sharpen slider ─────────────────────────────────────
     if ($('sl-sharpen')) {
@@ -283,46 +289,52 @@ export default function ImageEnlarger() {
           setProgress(88, 'Finalizing…')
 
         } else if (state.quality === 'ai') {
-          // AI models in the browser crash on large images (WebGL memory limits)
-          const totalPixels = src.naturalWidth * src.naturalHeight
-          if (totalPixels > 1500000) { // ~1.5 Megapixels
-            throw new Error(`Image is too large for browser AI upscaling (${(totalPixels / 1000000).toFixed(1)}MP). Please use 'Progressive + Sharpen' for high-res images, or use a smaller image (Max 1.5MP).`)
+          const apiKey = $('inp-api-key')?.value?.trim()
+          if (!apiKey) {
+            throw new Error('Please enter your Cutout.pro API Key below the Quality settings to use Cloud AI Upscale.')
           }
 
-          setProgress(10, 'Loading AI Model (Real-ESRGAN)…')
+          setProgress(10, 'Preparing image for cloud processing…')
           
-          // The default model is a 2x upscaler
-          const upscaler = new Upscaler()
+          // The API expects a File object. We convert the source image to a Blob.
+          const tempCanvas = document.createElement('canvas')
+          tempCanvas.width = src.naturalWidth; tempCanvas.height = src.naturalHeight
+          tempCanvas.getContext('2d').drawImage(src, 0, 0)
           
-          let currentImg = src
-          let currentW = src.naturalWidth
-          let currentH = src.naturalHeight
+          const blob = await new Promise(resolve => tempCanvas.toBlob(resolve, 'image/jpeg', 1.0))
           
-          // Iteratively upscale by 2x until we reach or exceed the target resolution
-          let iter = 1
-          while (currentW < targetW || currentH < targetH) {
-            setProgress(10 + (iter * 20), `AI Upscaling (Pass ${iter}) — This may take a while…`)
-            
-            // To prevent crashing the browser on large images, use patchSize
-            const upscaledSrc = await upscaler.upscale(currentImg, {
-              patchSize: 64,
-              padding: 2,
-            })
-            
-            // Load the upscaled base64 into an Image element for the next pass or final draw
-            currentImg = await new Promise((resolve) => {
-              const img = new Image()
-              img.onload = () => resolve(img)
-              img.src = upscaledSrc
-            })
-            
-            currentW = currentImg.naturalWidth
-            currentH = currentImg.naturalHeight
-            iter++
-            
-            // Limit to max 3 passes (8x upscale natively) to prevent infinite loops / crashes
-            if (iter > 3) break
+          setProgress(30, 'Uploading to Cutout.pro AI Cloud…')
+          
+          const formData = new FormData()
+          formData.append('file', blob, 'image.jpg')
+          // We can also pass outputFormat and faceModel if desired, defaults are fine.
+          
+          const response = await fetch('https://www.cutout.pro/api/v1/photoEnhance2', {
+            method: 'POST',
+            headers: {
+              'APIKEY': apiKey
+            },
+            body: formData
+          })
+          
+          if (!response.ok) {
+            throw new Error(`Cloud API Error: ${response.status} ${response.statusText}`)
           }
+          
+          setProgress(70, 'Processing complete, downloading…')
+          const result = await response.json()
+          
+          if (result.code !== 0) {
+            throw new Error(`Cutout.pro Error: ${result.msg || 'Unknown Error'}`)
+          }
+          
+          // Load the base64 result into an image
+          const currentImg = await new Promise((resolve, reject) => {
+            const img = new Image()
+            img.onload = () => resolve(img)
+            img.onerror = () => reject(new Error('Failed to load result from API'))
+            img.src = 'data:image/png;base64,' + result.data.imageBase
+          })
           
           setProgress(85, 'Rendering final size…')
           
@@ -354,11 +366,7 @@ export default function ImageEnlarger() {
 
       } catch (err) {
         console.error(err)
-        let msg = err.message
-        if (msg.includes('Failed to link vertex and fragment shaders') || msg.includes('WebGL')) {
-          msg = "Your device's GPU doesn't support this AI model or ran out of memory. Please use 'Progressive + Sharpen' instead."
-        }
-        toast('Processing failed: ' + msg, 'error')
+        toast('Processing failed: ' + err.message, 'error')
       } finally {
         btn.disabled = false
         btn.innerHTML = `<i class="ph ph-arrows-out"></i> Enlarge Image`
@@ -541,6 +549,13 @@ export default function ImageEnlarger() {
                 </div>
                 <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.3)', marginTop: '0.2rem' }}>
                   0 = off · 60 = natural · 120 = strong · 200 = max
+                </div>
+                <div id="el-api-key-row" className="el-slider-row" style={{ display: 'none', flexDirection: 'column', alignItems: 'flex-start', marginTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1rem' }}>
+                  <label style={{ marginBottom: '0.5rem', color: '#a78bfa' }}><i className="ph ph-key"></i> Cutout.pro API Key</label>
+                  <input type="password" id="inp-api-key" placeholder="Enter your API Key here" style={{ width: '100%', padding: '0.6rem 0.8rem', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '6px', fontFamily: 'monospace' }} />
+                  <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.5)', marginTop: '0.4rem', lineHeight: '1.4' }}>
+                    Required for Cloud AI Upscale. Get it from <a href="https://www.cutout.pro/" target="_blank" rel="noreferrer" style={{color:'#a78bfa'}}>cutout.pro</a>. Kept securely in your browser.
+                  </div>
                 </div>
               </div>
             </div>
