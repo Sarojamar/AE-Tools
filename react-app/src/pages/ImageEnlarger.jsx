@@ -283,6 +283,12 @@ export default function ImageEnlarger() {
           setProgress(88, 'Finalizing…')
 
         } else if (state.quality === 'ai') {
+          // AI models in the browser crash on large images (WebGL memory limits)
+          const totalPixels = src.naturalWidth * src.naturalHeight
+          if (totalPixels > 1500000) { // ~1.5 Megapixels
+            throw new Error(`Image is too large for browser AI upscaling (${(totalPixels / 1000000).toFixed(1)}MP). Please use 'Progressive + Sharpen' for high-res images, or use a smaller image (Max 1.5MP).`)
+          }
+
           setProgress(10, 'Loading AI Model (Real-ESRGAN)…')
           
           // The default model is a 2x upscaler
@@ -347,8 +353,12 @@ export default function ImageEnlarger() {
         updateInfo()
 
       } catch (err) {
-        toast('Processing failed: ' + err.message, 'error')
         console.error(err)
+        let msg = err.message
+        if (msg.includes('Failed to link vertex and fragment shaders') || msg.includes('WebGL')) {
+          msg = "Your device's GPU doesn't support this AI model or ran out of memory. Please use 'Progressive + Sharpen' instead."
+        }
+        toast('Processing failed: ' + msg, 'error')
       } finally {
         btn.disabled = false
         btn.innerHTML = `<i class="ph ph-arrows-out"></i> Enlarge Image`
