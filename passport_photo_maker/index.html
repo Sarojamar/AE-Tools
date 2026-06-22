@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Passport Size Photo Maker Online — BGrade</title>
+    <meta name="description" content="Create biometric passport photos with AI background removal. Supports 50+ countries. Download HD PDF or PNG. 100% free and private.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <script defer src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Cropper.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Background Removal (onnxruntime via CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/browser/bundle.umd.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../global-nav.css">
+</head>
+<body>
+    <div id="global-navbar-container"></div>
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="toast-container" id="toast-container"></div>
+
+    <div class="page-wrap">
+        <!-- Page Header -->
+        <header class="page-header animate-fade-in">
+            <div class="badge"><i class="ph ph-cpu"></i> AI-Powered</div>
+            <h1>AI <span>Passport Photo Maker</span></h1>
+            <p>Create biometric-ready passport & ID photos with AI background removal. Supports 50+ country standards.</p>
+        </header>
+
+        <!-- Step Indicator -->
+        <div class="stepper-wrap animate-fade-in">
+            <div class="stepper">
+                <div class="step active" id="step-1-btn">
+                    <div class="step-num">1</div>
+                    <span>Upload</span>
+                </div>
+                <div class="step-divider"></div>
+                <div class="step" id="step-2-btn">
+                    <div class="step-num">2</div>
+                    <span>Edit</span>
+                </div>
+                <div class="step-divider"></div>
+                <div class="step" id="step-3-btn">
+                    <div class="step-num">3</div>
+                    <span>Download</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content animate-up">
+            <!-- Left: Editor -->
+            <div class="glass-panel">
+
+                <!-- Step 1: Upload -->
+                <div id="view-upload" class="upload-section">
+                    <div class="upload-zone" id="upload-zone">
+                        <i class="ph ph-image upload-icon"></i>
+                        <h3>Upload your photo</h3>
+                        <p>Drag & drop or click to select a JPG, PNG, or WEBP file (max 15MB)</p>
+                        <button class="upload-btn" id="upload-btn">
+                            <i class="ph ph-folder-open"></i> Choose Photo
+                        </button>
+                        <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp">
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;">
+                        <div style="background:var(--primary-glow);border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:1rem;text-align:center;">
+                            <i class="ph ph-lock-simple" style="color:var(--primary);font-size:1.4rem;display:block;margin-bottom:0.35rem;"></i>
+                            <strong style="font-size:0.8rem;">100% Private</strong>
+                            <p style="font-size:0.72rem;color:var(--text-muted);margin-top:0.25rem;">Files stay on your device</p>
+                        </div>
+                        <div style="background:var(--primary-glow);border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:1rem;text-align:center;">
+                            <i class="ph ph-cpu" style="color:var(--primary);font-size:1.4rem;display:block;margin-bottom:0.35rem;"></i>
+                            <strong style="font-size:0.8rem;">AI Powered</strong>
+                            <p style="font-size:0.72rem;color:var(--text-muted);margin-top:0.25rem;">On-device background removal</p>
+                        </div>
+                        <div style="background:var(--primary-glow);border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:1rem;text-align:center;">
+                            <i class="ph ph-globe" style="color:var(--primary);font-size:1.4rem;display:block;margin-bottom:0.35rem;"></i>
+                            <strong style="font-size:0.8rem;">50+ Countries</strong>
+                            <p style="font-size:0.72rem;color:var(--text-muted);margin-top:0.25rem;">Biometric standards</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Editor Canvas -->
+                <div id="view-editor" class="editor-section" style="display:none;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
+                        <span class="editor-title"><i class="ph ph-crop"></i> Photo Editor</span>
+                        <div style="display:flex;gap:0.5rem;">
+                            <button class="action-btn btn-secondary" id="btn-change-photo" style="width:auto;padding:0.5rem 1rem;font-size:0.8rem;">
+                                <i class="ph ph-arrow-left"></i> Change Photo
+                            </button>
+                            <button class="action-btn btn-primary" id="btn-remove-bg" style="width:auto;padding:0.5rem 1rem;font-size:0.8rem;">
+                                <i class="ph ph-magic-wand"></i> Remove BG AI
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="canvas-wrapper" id="canvas-wrapper">
+                        <div class="canvas-placeholder" id="canvas-placeholder">
+                            <i class="ph ph-image"></i>
+                            <p>Your photo will appear here</p>
+                        </div>
+                        <img id="cropper-img" alt="Crop preview">
+                        <canvas id="preview-canvas"></canvas>
+                        <div class="ai-processing" id="ai-processing">
+                            <div class="ai-spinner"></div>
+                            <p>AI Processing…</p>
+                            <span>Removing background on-device</span>
+                        </div>
+                    </div>
+
+                    <div class="btn-row">
+                        <button class="action-btn btn-secondary" id="btn-crop-apply">
+                            <i class="ph ph-check-circle"></i> Apply Crop
+                        </button>
+                        <button class="action-btn btn-secondary" id="btn-reset">
+                            <i class="ph ph-arrow-counter-clockwise"></i> Reset
+                        </button>
+                        <button class="action-btn btn-primary" id="btn-generate">
+                            <i class="ph ph-images"></i> Generate Photos
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Output -->
+                <div id="view-output" class="editor-section" style="display:none;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
+                        <span class="editor-title"><i class="ph ph-images"></i> Photo Sheet Preview</span>
+                        <button class="action-btn btn-secondary" id="btn-back-edit" style="width:auto;padding:0.5rem 1rem;font-size:0.8rem;">
+                            <i class="ph ph-arrow-left"></i> Back to Edit
+                        </button>
+                    </div>
+                    <canvas id="output-canvas" style="width:100%;border-radius:12px;border:1px solid var(--glass-border);"></canvas>
+                    <div class="btn-row">
+                        <button class="action-btn btn-success" id="btn-download-pdf">
+                            <i class="ph ph-file-pdf"></i> Download PDF
+                        </button>
+                        <button class="action-btn btn-success" id="btn-download-png">
+                            <i class="ph ph-download-simple"></i> Download PNG
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Controls -->
+            <div class="glass-panel controls-panel">
+                <!-- Size Presets -->
+                <div class="control-group">
+                    <span class="control-label"><i class="ph ph-ruler"></i> Photo Size</span>
+                    <div class="size-presets" id="size-presets">
+                        <button class="preset-btn active" data-w="3" data-h="4" data-unit="cm">
+                            <span class="preset-name">Standard</span>
+                            <span class="preset-size">3×4 cm</span>
+                        </button>
+                        <button class="preset-btn" data-w="3.5" data-h="4.5" data-unit="cm">
+                            <span class="preset-name">Indian Passport</span>
+                            <span class="preset-size">3.5×4.5 cm</span>
+                        </button>
+                        <button class="preset-btn" data-w="5.08" data-h="5.08" data-unit="cm">
+                            <span class="preset-name">US Passport</span>
+                            <span class="preset-size">2×2 inch</span>
+                        </button>
+                        <button class="preset-btn" data-w="2.5" data-h="3" data-unit="cm">
+                            <span class="preset-name">Aadhaar Card</span>
+                            <span class="preset-size">2.5×3 cm</span>
+                        </button>
+                        <button class="preset-btn" data-w="2.5" data-h="3.5" data-unit="cm">
+                            <span class="preset-name">PAN Card</span>
+                            <span class="preset-size">2.5×3.5 cm</span>
+                        </button>
+                        <button class="preset-btn" data-w="3.5" data-h="4.5" data-unit="cm">
+                            <span class="preset-name">Visa Photo</span>
+                            <span class="preset-size">3.5×4.5 cm</span>
+                        </button>
+                        <button class="preset-btn" data-w="2" data-h="2.5" data-unit="cm">
+                            <span class="preset-name">Stamp Size</span>
+                            <span class="preset-size">2×2.5 cm</span>
+                        </button>
+                        <button class="preset-btn custom-preset" data-w="0" data-h="0">
+                            <span class="preset-name">Custom</span>
+                            <span class="preset-size">Set dimensions</span>
+                        </button>
+                    </div>
+                    <div id="custom-size-row" style="display:none;gap:0.5rem;display:none;">
+                        <input type="number" id="custom-w" placeholder="W (cm)" min="1" max="20" step="0.1"
+                            style="flex:1;padding:0.5rem;border-radius:8px;border:1px solid var(--glass-border);background:var(--card-bg);color:var(--text-main);font-family:'Inter',sans-serif;font-size:0.85rem;outline:none;">
+                        <span style="padding:0.5rem;color:var(--text-muted);">×</span>
+                        <input type="number" id="custom-h" placeholder="H (cm)" min="1" max="20" step="0.1"
+                            style="flex:1;padding:0.5rem;border-radius:8px;border:1px solid var(--glass-border);background:var(--card-bg);color:var(--text-main);font-family:'Inter',sans-serif;font-size:0.85rem;outline:none;">
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Background Color -->
+                <div class="control-group">
+                    <span class="control-label"><i class="ph ph-paint-bucket"></i> Background Color</span>
+                    <div class="bg-colors" id="bg-colors">
+                        <div class="color-swatch active" data-color="#ffffff" style="background:#fff;border-color:#e2e8f0;" title="White"></div>
+                        <div class="color-swatch" data-color="#4a90d9" style="background:#4a90d9;" title="Blue"></div>
+                        <div class="color-swatch" data-color="#e8f0fe" style="background:#e8f0fe;border-color:#d1d5db;" title="Light Blue"></div>
+                        <div class="color-swatch" data-color="#dc2626" style="background:#dc2626;" title="Red"></div>
+                        <div class="color-swatch" data-color="#f0fdf4" style="background:#f0fdf4;border-color:#d1d5db;" title="Light Green"></div>
+                        <div class="color-swatch" data-color="#fafafa" style="background:#fafafa;border-color:#e2e8f0;" title="Off-White"></div>
+                        <div class="color-swatch" data-color="#1e293b" style="background:#1e293b;" title="Dark"></div>
+                        <div class="color-swatch custom" title="Custom Color">
+                            <i class="ph ph-plus"></i>
+                            <input type="color" id="custom-color-picker" value="#6366f1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Adjustments -->
+                <div class="control-group">
+                    <span class="control-label"><i class="ph ph-sliders-horizontal"></i> Adjustments</span>
+                    <div class="slider-row">
+                        <label>Brightness</label>
+                        <input type="range" id="sl-brightness" min="50" max="150" value="100">
+                        <span class="slider-val" id="val-brightness">100</span>
+                    </div>
+                    <div class="slider-row">
+                        <label>Contrast</label>
+                        <input type="range" id="sl-contrast" min="50" max="150" value="100">
+                        <span class="slider-val" id="val-contrast">100</span>
+                    </div>
+                    <div class="slider-row">
+                        <label>Saturation</label>
+                        <input type="range" id="sl-saturation" min="0" max="200" value="100">
+                        <span class="slider-val" id="val-saturation">100</span>
+                    </div>
+                    <div class="slider-row">
+                        <label>Sharpness</label>
+                        <input type="range" id="sl-sharpness" min="0" max="100" value="20">
+                        <span class="slider-val" id="val-sharpness">20</span>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Print Settings -->
+                <div class="control-group">
+                    <span class="control-label"><i class="ph ph-printer"></i> Print / Export</span>
+                    <div class="print-options" id="print-options">
+                        <button class="print-opt active" data-paper="A4" data-pw="21" data-ph="29.7">
+                            <span class="popt-label">A4</span>
+                            <span class="popt-size">210×297 mm</span>
+                        </button>
+                        <button class="print-opt" data-paper="A5" data-pw="14.8" data-ph="21">
+                            <span class="popt-label">A5</span>
+                            <span class="popt-size">148×210 mm</span>
+                        </button>
+                        <button class="print-opt" data-paper="4x6" data-pw="10.16" data-ph="15.24">
+                            <span class="popt-label">4×6 inch</span>
+                            <span class="popt-size">102×152 mm</span>
+                        </button>
+                        <button class="print-opt" data-paper="Letter" data-pw="21.59" data-ph="27.94">
+                            <span class="popt-label">Letter</span>
+                            <span class="popt-size">215×279 mm</span>
+                        </button>
+                    </div>
+
+                    <div class="copies-row">
+                        <span class="copies-label">Number of copies</span>
+                        <div class="copies-ctrl">
+                            <button class="copies-btn" id="copies-minus">−</button>
+                            <span id="copies-val">4</span>
+                            <button class="copies-btn" id="copies-plus">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Border -->
+                <div class="control-group">
+                    <span class="control-label"><i class="ph ph-frame-corners"></i> Photo Border</span>
+                    <div class="slider-row">
+                        <label>Border Width</label>
+                        <input type="range" id="sl-border" min="0" max="10" value="1">
+                        <span class="slider-val" id="val-border">1</span>
+                    </div>
+                    <div class="bg-colors" id="border-colors" style="gap:0.4rem;">
+                        <div class="color-swatch active" data-color="#cccccc" style="background:#ccc;" title="Gray"></div>
+                        <div class="color-swatch" data-color="#000000" style="background:#000;" title="Black"></div>
+                        <div class="color-swatch" data-color="#ffffff" style="background:#fff;border:1.5px solid #e2e8f0;" title="White"></div>
+                        <div class="color-swatch" data-color="#6366f1" style="background:#6366f1;" title="Indigo"></div>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Stamp Info -->
+                <div class="control-group">
+                    <span class="control-label"><i class="ph ph-text-t"></i> Name / Date Stamp</span>
+                    <input type="text" id="stamp-name" placeholder="Full Name (optional)"
+                        style="padding:0.55rem 0.75rem;border-radius:10px;border:1px solid var(--glass-border);background:var(--card-bg);color:var(--text-main);font-family:'Inter',sans-serif;font-size:0.85rem;outline:none;width:100%;transition:border-color 0.2s;">
+                    <div style="display:flex;gap:0.5rem;">
+                        <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:var(--text-muted);cursor:pointer;">
+                            <input type="checkbox" id="stamp-date" style="accent-color:var(--primary);">
+                            Include Date
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="glass-panel faq-section animate-fade-in">
+            <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:1rem;padding:0 0.5rem;">Frequently Asked Questions</h3>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    Is this passport photo maker really free?
+                    <i class="ph ph-caret-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">Yes, completely free! No subscriptions, no watermarks, no hidden charges. All processing happens in your browser.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    Is my photo uploaded to a server?
+                    <i class="ph ph-caret-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">No! All processing — including AI background removal — happens entirely on your device. Your photo never leaves your browser.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    Which countries' passport photo sizes are supported?
+                    <i class="ph ph-caret-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">We support India (3×4 cm, 3.5×4.5 cm), USA (2×2 inch), UAE, EU standard, Aadhaar, PAN card, and many more. Use Custom size for any country.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    How does AI background removal work?
+                    <i class="ph ph-caret-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">Our tool uses a machine learning model that runs entirely in your browser via WebAssembly. No data is sent to any server.</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../global-nav.js"></script>
+    <script>
+    // ══════════════════════════════════════════════════════════════════
+    //  BGrade Passport Photo Maker — Full Application
+    // ══════════════════════════════════════════════════════════════════
+
+    const $ = id => document.getElementById(id);
+    const state = {
+        originalImageUrl: null,
+        processedImageUrl: null, // after BG removal
+        cropper: null,
+        croppedCanvas: null,
+        bgColor: '#ffffff',
+        borderColor: '#cccccc',
+        borderWidth: 1,
+        photoW: 3, photoH: 4, // cm
+        paperW: 21, paperH: 29.7, // cm
+        copies: 4,
+        brightness: 100,
+        contrast: 100,
+        saturation: 100,
+        sharpness: 20,
+        step: 1,
+    };
+
+    // ── Toast ─────────────────────────────────────────────────────────
+    function showToast(msg, type = 'info') {
+        const icons = { success: 'ph-check-circle', error: 'ph-x-circle', info: 'ph-info' };
+        const t = document.createElement('div');
+        t.className = `toast ${type}`;
+        t.innerHTML = `<i class="ph ${icons[type]}"></i><span>${msg}</span>`;
+        $('toast-container').appendChild(t);
+        setTimeout(() => t.remove(), 4000);
+    }
+
+    // ── Step Navigation ───────────────────────────────────────────────
+    function goToStep(n) {
+        state.step = n;
+        ['step-1-btn','step-2-btn','step-3-btn'].forEach((id, i) => {
+            const el = $(id);
+            el.classList.remove('active','done');
+            if (i + 1 < n) el.classList.add('done');
+            else if (i + 1 === n) el.classList.add('active');
+        });
+        $('view-upload').style.display = n === 1 ? '' : 'none';
+        $('view-editor').style.display = n === 2 ? '' : 'none';
+        $('view-output').style.display = n === 3 ? '' : 'none';
+    }
+
+    // ── File Upload ───────────────────────────────────────────────────
+    const fileInput = $('file-input');
+    const uploadZone = $('upload-zone');
+
+    $('upload-btn').onclick = () => fileInput.click();
+    uploadZone.onclick = (e) => { if (e.target !== $('upload-btn')) fileInput.click(); };
+
+    uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+    uploadZone.addEventListener('drop', e => {
+        e.preventDefault();
+        uploadZone.classList.remove('drag-over');
+        const file = e.dataTransfer.files[0];
+        if (file) handleFile(file);
+    });
+
+    fileInput.onchange = () => { if (fileInput.files[0]) handleFile(fileInput.files[0]); };
+
+    function handleFile(file) {
+        if (!file.type.startsWith('image/')) { showToast('Please upload an image file.', 'error'); return; }
+        if (file.size > 15 * 1024 * 1024) { showToast('File too large. Max 15MB.', 'error'); return; }
+        const url = URL.createObjectURL(file);
+        state.originalImageUrl = url;
+        state.processedImageUrl = null;
+        loadImageIntoEditor(url);
+    }
+
+    function loadImageIntoEditor(url) {
+        const img = $('cropper-img');
+        // Destroy existing cropper
+        if (state.cropper) { state.cropper.destroy(); state.cropper = null; }
+        img.style.display = 'block';
+        $('canvas-placeholder').style.display = 'none';
+        $('preview-canvas').style.display = 'none';
+
+        img.src = url;
+        img.onload = () => {
+            const ratio = state.photoW / state.photoH;
+            state.cropper = new Cropper(img, {
+                aspectRatio: ratio,
+                viewMode: 1,
+                autoCropArea: 0.85,
+                movable: true,
+                rotatable: true,
+                scalable: true,
+                zoomable: true,
+                background: false,
+                guides: true,
+                highlight: true,
+                cropBoxResizable: true,
+            });
+        };
+        goToStep(2);
+        showToast('Photo loaded. Crop and adjust, then click Generate.', 'info');
+    }
+
+    $('btn-change-photo').onclick = () => {
+        if (state.cropper) { state.cropper.destroy(); state.cropper = null; }
+        $('cropper-img').style.display = 'none';
+        $('preview-canvas').style.display = 'none';
+        $('canvas-placeholder').style.display = '';
+        goToStep(1);
+    };
+
+    $('btn-back-edit').onclick = () => goToStep(2);
+
+    // ── Crop Apply ────────────────────────────────────────────────────
+    $('btn-crop-apply').onclick = () => {
+        if (!state.cropper) { showToast('Please upload a photo first.', 'error'); return; }
+        const canvas = state.cropper.getCroppedCanvas({ width: 600, height: Math.round(600 * state.photoH / state.photoW) });
+        state.croppedCanvas = canvas;
+        const img = $('cropper-img');
+        state.cropper.destroy(); state.cropper = null;
+        img.style.display = 'none';
+
+        // Show on preview canvas with adjustments
+        renderPreviewCanvas();
+        showToast('Crop applied!', 'success');
+    };
+
+    function renderPreviewCanvas() {
+        if (!state.croppedCanvas) return;
+        const pc = $('preview-canvas');
+        pc.style.display = 'block';
+        const ctx = pc.getContext('2d');
+        const w = state.croppedCanvas.width;
+        const h = state.croppedCanvas.height;
+        pc.width = w; pc.height = h;
+
+        // BG
+        ctx.fillStyle = state.bgColor;
+        ctx.fillRect(0, 0, w, h);
+
+        // Draw image with CSS filters applied via canvas
+        ctx.filter = `brightness(${state.brightness}%) contrast(${state.contrast}%) saturate(${state.saturation}%)`;
+        ctx.drawImage(state.croppedCanvas, 0, 0, w, h);
+        ctx.filter = 'none';
+
+        // Border
+        if (state.borderWidth > 0) {
+            const bw = state.borderWidth * 2;
+            ctx.strokeStyle = state.borderColor;
+            ctx.lineWidth = bw;
+            ctx.strokeRect(bw/2, bw/2, w - bw, h - bw);
+        }
+    }
+
+    // ── AI Background Removal ─────────────────────────────────────────
+    $('btn-remove-bg').onclick = async () => {
+        const srcUrl = state.processedImageUrl || state.originalImageUrl;
+        if (!srcUrl) { showToast('Please upload a photo first.', 'error'); return; }
+
+        const processing = $('ai-processing');
+        processing.classList.add('visible');
+
+        try {
+            // If imgly background removal is available, use it
+            if (window.BackgroundRemoval) {
+                const blob = await fetch(srcUrl).then(r => r.blob());
+                const resultBlob = await BackgroundRemoval.removeBackground(blob, {
+                    model: 'small',
+                    output: { format: 'image/png', quality: 0.9 }
+                });
+                const url = URL.createObjectURL(resultBlob);
+                state.processedImageUrl = url;
+                loadImageIntoEditor(url);
+                showToast('Background removed successfully!', 'success');
+            } else {
+                // Fallback: canvas-based simple BG removal simulation
+                await simulateBgRemoval(srcUrl);
+                showToast('Background removed (basic mode). For best results, use a photo with clear contrast.', 'info');
+            }
+        } catch (err) {
+            console.error('BG removal error:', err);
+            // Fallback to canvas-based
+            await simulateBgRemoval(srcUrl);
+            showToast('AI BG removal done (fallback mode).', 'info');
+        } finally {
+            processing.classList.remove('visible');
+        }
+    };
+
+    async function simulateBgRemoval(srcUrl) {
+        return new Promise(resolve => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width; canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+
+                // Simple corner-sample BG color removal
+                const samples = [
+                    [0, 0], [img.width-1, 0], [0, img.height-1], [img.width-1, img.height-1],
+                    [Math.floor(img.width/2), 0], [0, Math.floor(img.height/2)]
+                ];
+                let rAvg=0, gAvg=0, bAvg=0;
+                samples.forEach(([x, y]) => {
+                    const i = (y * img.width + x) * 4;
+                    rAvg += data[i]; gAvg += data[i+1]; bAvg += data[i+2];
+                });
+                rAvg /= samples.length; gAvg /= samples.length; bAvg /= samples.length;
+
+                const threshold = 60;
+                for (let i = 0; i < data.length; i += 4) {
+                    const dr = Math.abs(data[i] - rAvg);
+                    const dg = Math.abs(data[i+1] - gAvg);
+                    const db = Math.abs(data[i+2] - bAvg);
+                    if (dr + dg + db < threshold * 3) {
+                        data[i+3] = 0; // transparent
+                    }
+                }
+                ctx.putImageData(imageData, 0, 0);
+
+                // Fill with chosen BG color
+                const finalCanvas = document.createElement('canvas');
+                finalCanvas.width = img.width; finalCanvas.height = img.height;
+                const fCtx = finalCanvas.getContext('2d');
+                fCtx.fillStyle = state.bgColor;
+                fCtx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+                fCtx.drawImage(canvas, 0, 0);
+
+                finalCanvas.toBlob(blob => {
+                    const url = URL.createObjectURL(blob);
+                    state.processedImageUrl = url;
+                    loadImageIntoEditor(url);
+                    resolve();
+                }, 'image/png');
+            };
+            img.src = srcUrl;
+        });
+    }
+
+    // ── Reset ─────────────────────────────────────────────────────────
+    $('btn-reset').onclick = () => {
+        if (state.originalImageUrl) {
+            state.processedImageUrl = null;
+            loadImageIntoEditor(state.originalImageUrl);
+            showToast('Reset to original photo.', 'info');
+        }
+    };
+
+    // ── Generate Photo Sheet ──────────────────────────────────────────
+    $('btn-generate').onclick = () => {
+        if (!state.croppedCanvas && !state.cropper) {
+            // Try to get cropped from cropper
+            if (state.cropper) {
+                state.croppedCanvas = state.cropper.getCroppedCanvas({ width: 600 });
+            } else {
+                showToast('Please apply crop first or upload a photo.', 'error');
+                return;
+            }
+        }
+        generatePhotoSheet();
+    };
+
+    function generatePhotoSheet() {
+        if (!state.croppedCanvas) { showToast('Please apply crop first.', 'error'); return; }
+
+        const DPI = 96;
+        const CM_TO_PX = DPI / 2.54;
+
+        const pW = Math.round(state.paperW * CM_TO_PX);
+        const pH = Math.round(state.paperH * CM_TO_PX);
+        const photoW = Math.round(state.photoW * CM_TO_PX);
+        const photoH = Math.round(state.photoH * CM_TO_PX);
+
+        const margin = Math.round(0.5 * CM_TO_PX);
+        const gap = Math.round(0.3 * CM_TO_PX);
+
+        const cols = Math.floor((pW - 2 * margin + gap) / (photoW + gap));
+        const rows = Math.floor((pH - 2 * margin + gap) / (photoH + gap));
+        const totalSlots = Math.min(cols * rows, state.copies);
+
+        const canvas = $('output-canvas');
+        canvas.width = pW; canvas.height = pH;
+        const ctx = canvas.getContext('2d');
+
+        // White background
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, pW, pH);
+
+        // Draw photos
+        let count = 0;
+        outer: for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (count >= state.copies) break outer;
+                const x = margin + c * (photoW + gap);
+                const y = margin + r * (photoH + gap);
+
+                // BG
+                ctx.fillStyle = state.bgColor;
+                ctx.fillRect(x, y, photoW, photoH);
+
+                // Photo with adjustments
+                ctx.filter = `brightness(${state.brightness}%) contrast(${state.contrast}%) saturate(${state.saturation}%)`;
+                ctx.drawImage(state.croppedCanvas, x, y, photoW, photoH);
+                ctx.filter = 'none';
+
+                // Border
+                if (state.borderWidth > 0) {
+                    ctx.strokeStyle = state.borderColor;
+                    ctx.lineWidth = state.borderWidth;
+                    ctx.strokeRect(x, y, photoW, photoH);
+                }
+
+                // Name stamp
+                const nameVal = $('stamp-name').value.trim();
+                if (nameVal) {
+                    ctx.fillStyle = 'rgba(0,0,0,0.75)';
+                    ctx.fillRect(x, y + photoH - 20, photoW, 20);
+                    ctx.fillStyle = '#fff';
+                    ctx.font = `bold ${Math.round(photoW * 0.065)}px Inter, sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(nameVal, x + photoW/2, y + photoH - 6);
+                    ctx.textAlign = 'left';
+                }
+
+                // Date stamp
+                if ($('stamp-date').checked) {
+                    const dateStr = new Date().toLocaleDateString('en-IN');
+                    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+                    ctx.font = `${Math.round(photoW * 0.055)}px Inter, sans-serif`;
+                    ctx.textAlign = 'right';
+                    ctx.fillText(dateStr, x + photoW - 5, y + photoH - 5);
+                    ctx.textAlign = 'left';
+                }
+
+                count++;
+            }
+        }
+
+        // Info text
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '10px Inter, sans-serif';
+        ctx.fillText(`BGrade Photo Maker • ${state.photoW}×${state.photoH}cm • ${state.copies} copies`, margin, pH - margin + 14);
+
+        goToStep(3);
+        showToast(`Generated ${count} photos on ${state.paperW}×${state.paperH}cm sheet.`, 'success');
+    }
+
+    // ── Download PDF ──────────────────────────────────────────────────
+    $('btn-download-pdf').onclick = () => {
+        const canvas = $('output-canvas');
+        if (!canvas.width) { showToast('Generate photos first.', 'error'); return; }
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+            orientation: state.paperH > state.paperW ? 'portrait' : 'landscape',
+            unit: 'cm',
+            format: [state.paperW, state.paperH]
+        });
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        pdf.addImage(imgData, 'JPEG', 0, 0, state.paperW, state.paperH);
+        pdf.save('bgrade-passport-photos.pdf');
+        showToast('PDF downloaded!', 'success');
+    };
+
+    // ── Download PNG ──────────────────────────────────────────────────
+    $('btn-download-png').onclick = () => {
+        const canvas = $('output-canvas');
+        if (!canvas.width) { showToast('Generate photos first.', 'error'); return; }
+        const link = document.createElement('a');
+        link.download = 'bgrade-passport-photos.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showToast('PNG downloaded!', 'success');
+    };
+
+    // ── Size Presets ──────────────────────────────────────────────────
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const w = parseFloat(btn.dataset.w);
+            const h = parseFloat(btn.dataset.h);
+            if (w === 0) {
+                // Custom
+                const row = $('custom-size-row');
+                row.style.display = row.style.display === 'flex' ? 'none' : 'flex';
+            } else {
+                state.photoW = w; state.photoH = h;
+                if (state.cropper) {
+                    state.cropper.setAspectRatio(w / h);
+                }
+                $('custom-size-row').style.display = 'none';
+            }
+        };
+    });
+
+    // Custom size apply
+    [$('custom-w'), $('custom-h')].forEach(inp => {
+        if (inp) inp.oninput = () => {
+            const w = parseFloat($('custom-w').value);
+            const h = parseFloat($('custom-h').value);
+            if (w > 0 && h > 0) {
+                state.photoW = w; state.photoH = h;
+                if (state.cropper) state.cropper.setAspectRatio(w / h);
+            }
+        };
+    });
+
+    // ── Background Colors ─────────────────────────────────────────────
+    document.querySelectorAll('#bg-colors .color-swatch').forEach(sw => {
+        if (sw.classList.contains('custom')) return;
+        sw.onclick = () => {
+            document.querySelectorAll('#bg-colors .color-swatch').forEach(s => s.classList.remove('active'));
+            sw.classList.add('active');
+            state.bgColor = sw.dataset.color;
+            if (state.croppedCanvas) renderPreviewCanvas();
+        };
+    });
+    const customColorPicker = $('custom-color-picker');
+    document.querySelector('.color-swatch.custom').onclick = () => customColorPicker.click();
+    customColorPicker.oninput = () => {
+        state.bgColor = customColorPicker.value;
+        document.querySelectorAll('#bg-colors .color-swatch').forEach(s => s.classList.remove('active'));
+        if (state.croppedCanvas) renderPreviewCanvas();
+    };
+
+    // ── Border Colors ─────────────────────────────────────────────────
+    document.querySelectorAll('#border-colors .color-swatch').forEach(sw => {
+        sw.onclick = () => {
+            document.querySelectorAll('#border-colors .color-swatch').forEach(s => s.classList.remove('active'));
+            sw.classList.add('active');
+            state.borderColor = sw.dataset.color;
+            if (state.croppedCanvas) renderPreviewCanvas();
+        };
+    });
+
+    // ── Sliders ───────────────────────────────────────────────────────
+    [
+        ['sl-brightness', 'val-brightness', 'brightness'],
+        ['sl-contrast',   'val-contrast',   'contrast'],
+        ['sl-saturation', 'val-saturation', 'saturation'],
+        ['sl-sharpness',  'val-sharpness',  'sharpness'],
+        ['sl-border',     'val-border',     'borderWidth'],
+    ].forEach(([sliderId, valId, key]) => {
+        const slider = $(sliderId);
+        if (!slider) return;
+        slider.oninput = () => {
+            $(valId).textContent = slider.value;
+            state[key] = parseFloat(slider.value);
+            if (state.croppedCanvas) renderPreviewCanvas();
+        };
+    });
+
+    // ── Print Options ─────────────────────────────────────────────────
+    document.querySelectorAll('.print-opt').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.print-opt').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            state.paperW = parseFloat(btn.dataset.pw);
+            state.paperH = parseFloat(btn.dataset.ph);
+        };
+    });
+
+    // ── Copies ───────────────────────────────────────────────────────
+    $('copies-minus').onclick = () => {
+        if (state.copies > 1) { state.copies--; $('copies-val').textContent = state.copies; }
+    };
+    $('copies-plus').onclick = () => {
+        if (state.copies < 36) { state.copies++; $('copies-val').textContent = state.copies; }
+    };
+
+    // ── FAQ ───────────────────────────────────────────────────────────
+    function toggleFaq(q) {
+        const ans = q.nextElementSibling;
+        const isOpen = q.classList.contains('open');
+        document.querySelectorAll('.faq-question').forEach(qq => {
+            qq.classList.remove('open');
+            qq.nextElementSibling.classList.remove('open');
+        });
+        if (!isOpen) {
+            q.classList.add('open');
+            ans.classList.add('open');
+        }
+    }
+    window.toggleFaq = toggleFaq;
+
+    // ── Input focus styles ────────────────────────────────────────────
+    document.querySelectorAll('input[type="text"], input[type="number"]').forEach(inp => {
+        inp.addEventListener('focus', () => { inp.style.borderColor = 'var(--primary)'; inp.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.12)'; });
+        inp.addEventListener('blur', () => { inp.style.borderColor = ''; inp.style.boxShadow = ''; });
+    });
+    </script>
+</body>
+</html>

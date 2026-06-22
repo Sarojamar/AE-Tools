@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BGrade — Professional Web Tools Hub</title>
+    <meta name="description" content="Access BGrade's suite of professional online tools: AI Passport Photo Maker and Pro File Converter. 100% private, browser-based processing.">
+    <meta name="keywords" content="BGrade, passport photo maker, file converter, image resizer, web tools, free online tools">
+    <link rel="canonical" href="#">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <script defer src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="global-nav.css">
+</head>
+<body>
+    <div id="global-navbar-container"></div>
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+
+    <main class="hub-container">
+        <!-- Hero Section -->
+        <section class="hero animate-fade-in">
+            <div class="hero-badge">
+                <i class="ph ph-lightning"></i>
+                Free · Private · Browser-Based
+            </div>
+            <h1>
+                Professional<br>
+                <span class="gradient-text">Web Tools Hub</span>
+            </h1>
+            <p>Powerful tools that run entirely in your browser. No uploads, no accounts, no compromises on privacy.</p>
+
+            <div class="stats-row">
+                <div class="stat-item">
+                    <span class="stat-value">100%</span>
+                    <span class="stat-label">Private</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-value">50+</span>
+                    <span class="stat-label">Photo Presets</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-value">Free</span>
+                    <span class="stat-label">Always</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-value">5+</span>
+                    <span class="stat-label">File Formats</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tool Cards Grid -->
+        <div class="tool-grid" style="margin-top:0.5rem;">
+            <!-- Passport Photo Maker -->
+            <a href="passport_photo_maker/" class="tool-card animate-up" id="card-passport">
+                <div class="spotlight-glow"></div>
+                <span class="tool-card-badge">
+                    <i class="ph ph-sparkle"></i> Biometric AI
+                </span>
+                <div class="tool-card-content">
+                    <div class="tool-card-visual" id="passport-visual">
+                        <div class="tool-card-visual-inner passport-preview">
+                            <div class="passport-photo-grid">
+                                <div class="pp-slot filled"><i class="ph ph-user"></i></div>
+                                <div class="pp-slot filled"><i class="ph ph-user"></i></div>
+                                <div class="pp-slot filled ai-glow"><i class="ph ph-user"></i></div>
+                                <div class="pp-slot"><i class="ph ph-plus"></i></div>
+                            </div>
+                            <div class="pp-badge-row">
+                                <span class="pp-badge">3×4cm</span>
+                                <span class="pp-badge">3.5×4.5</span>
+                                <span class="pp-badge">2×2"</span>
+                            </div>
+                            <div class="pp-ai-bar">
+                                <i class="ph ph-cpu"></i>
+                                <div class="pp-ai-progress"><div class="pp-ai-fill"></div></div>
+                                <span>AI BG Removal</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tool-info">
+                        <h2>AI Passport Photo Maker</h2>
+                        <p>Create biometric-ready passport photos with AI background removal. Supports 50+ countries and custom sizes.</p>
+                    </div>
+                    <div class="feature-tags">
+                        <span class="feature-tag">AI Background Removal</span>
+                        <span class="feature-tag">PDF Export</span>
+                        <span class="feature-tag">50+ Presets</span>
+                    </div>
+                </div>
+                <div class="btn-arrow">
+                    Open Tool <i class="ph ph-arrow-right"></i>
+                </div>
+            </a>
+
+            <!-- File Converter -->
+            <a href="file_converter/" class="tool-card animate-up" id="card-converter">
+                <div class="spotlight-glow"></div>
+                <span class="tool-card-badge">
+                    <i class="ph ph-wifi-slash"></i> Offline-First
+                </span>
+                <div class="tool-card-content">
+                    <div class="tool-card-visual">
+                        <div class="tool-card-visual-inner converter-preview">
+                            <div class="converter-formats">
+                                <div class="fmt-pill jpg">JPG</div>
+                                <i class="ph ph-arrow-right fmt-arrow"></i>
+                                <div class="fmt-pill png">PNG</div>
+                                <i class="ph ph-arrow-right fmt-arrow"></i>
+                                <div class="fmt-pill webp">WEBP</div>
+                            </div>
+                            <div class="converter-formats" style="margin-top:0.5rem;">
+                                <div class="fmt-pill pdf">PDF</div>
+                                <i class="ph ph-arrow-right fmt-arrow"></i>
+                                <div class="fmt-pill jpg">JPG</div>
+                            </div>
+                            <div class="kb-control">
+                                <span class="kb-label"><i class="ph ph-faders-horizontal"></i> Target Size</span>
+                                <div class="kb-bar">
+                                    <div class="kb-track">
+                                        <div class="kb-thumb"></div>
+                                    </div>
+                                    <span class="kb-val">150 KB</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tool-info">
+                        <h2>Pro File Converter</h2>
+                        <p>Convert and resize JPG, PNG, WEBP, and PDF. Features advanced target file size (KB) control.</p>
+                    </div>
+                    <div class="feature-tags">
+                        <span class="feature-tag">Target KB Size</span>
+                        <span class="feature-tag">Batch Convert</span>
+                        <span class="feature-tag">PDF Support</span>
+                    </div>
+                </div>
+                <div class="btn-arrow">
+                    Open Tool <i class="ph ph-arrow-right"></i>
+                </div>
+            </a>
+
+            <!-- Pro ID Card Printer -->
+            <a href="id_card_printer/" class="tool-card animate-up" id="card-idprinter">
+                <div class="spotlight-glow"></div>
+                <span class="tool-card-badge">
+                    <i class="ph ph-printer"></i> A4 & PVC Layout
+                </span>
+                <div class="tool-card-content">
+                    <div class="tool-card-visual">
+                        <div class="tool-card-visual-inner idcard-preview">
+                            <div class="idcard-mock-grid">
+                                <div class="idcard-mock-slot filled">
+                                    <div class="mock-card-face">
+                                        <div class="mock-card-header">
+                                            <div class="mock-avatar"></div>
+                                            <div class="mock-lines">
+                                                <div class="mock-line-title"></div>
+                                                <div class="mock-line-sub"></div>
+                                            </div>
+                                        </div>
+                                        <div class="mock-card-barcode"></div>
+                                        <span class="face-lbl">FRONT</span>
+                                    </div>
+                                    <div class="mock-crop-mark tl"></div>
+                                    <div class="mock-crop-mark tr"></div>
+                                    <div class="mock-crop-mark bl"></div>
+                                    <div class="mock-crop-mark br"></div>
+                                </div>
+                                <div class="idcard-mock-slot filled back-glow">
+                                    <div class="mock-card-face">
+                                        <div class="mock-lines-back">
+                                            <div class="mock-line-full"></div>
+                                            <div class="mock-line-full"></div>
+                                            <div class="mock-line-full"></div>
+                                        </div>
+                                        <span class="face-lbl">BACK</span>
+                                    </div>
+                                    <div class="mock-crop-mark tl"></div>
+                                    <div class="mock-crop-mark tr"></div>
+                                    <div class="mock-crop-mark bl"></div>
+                                    <div class="mock-crop-mark br"></div>
+                                </div>
+                            </div>
+                            <div class="id-print-bar">
+                                <i class="ph ph-crop"></i>
+                                <span class="preset-label">CR80 Sizing & crop overlay</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tool-info">
+                        <h2>Pro ID Card Printer</h2>
+                        <p>Format Aadhaar, PAN, Voter ID, and other scans to standard CR80 print sizes. Build 5-card A4 sheets, rotate, crop, apply enhancements, and print.</p>
+                    </div>
+                    <div class="feature-tags">
+                        <span class="feature-tag">CR80 Sizing</span>
+                        <span class="feature-tag">5-Card A4 Sheets</span>
+                        <span class="feature-tag">Scan Filters</span>
+                        <span class="feature-tag">Corner Crop Marks</span>
+                    </div>
+                </div>
+                <div class="btn-arrow">
+                    Open Tool <i class="ph ph-arrow-right"></i>
+                </div>
+            </a>
+        </div>
+
+        <!-- Features Section -->
+        <section class="features-section animate-fade-in">
+            <p class="section-label">Why BGrade?</p>
+            <h2 class="section-title">Built for Privacy &amp; Speed</h2>
+            <p class="section-desc">All processing happens in your browser. Your files never leave your device.</p>
+
+            <div class="feature-cards">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="ph ph-lock-simple"></i></div>
+                    <h3>100% Private</h3>
+                    <p>Files are processed locally. Nothing is uploaded to any server ever.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="ph ph-lightning"></i></div>
+                    <h3>Lightning Fast</h3>
+                    <p>No server round-trips. Processing is instant using your device's power.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="ph ph-currency-dollar-simple"></i></div>
+                    <h3>Always Free</h3>
+                    <p>No subscriptions, no paywalls, no hidden costs. Free forever.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="ph ph-globe"></i></div>
+                    <h3>Works Offline</h3>
+                    <p>Core tools work without an internet connection after initial load.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-links">
+            <a href="#">Home</a>
+            <a href="passport_photo_maker/">Passport Photo Maker</a>
+            <a href="file_converter/">File Converter</a>
+            <a href="id_card_printer/">ID Card Printer</a>
+            <a href="#">Privacy Policy</a>
+        </div>
+        <p>&copy; 2026 BGrade — Professional Web Tools. All rights reserved.</p>
+    </footer>
+
+    <script src="global-nav.js"></script>
+    <script>
+        // Spotlight effect on cards
+        document.querySelectorAll('.tool-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                card.querySelector('.spotlight-glow').style.background =
+                    `radial-gradient(circle at ${x}% ${y}%, rgba(99,102,241,0.13) 0%, transparent 65%)`;
+            });
+        });
+
+        // Animate KB bar
+        const kbFill = document.querySelector('.kb-thumb');
+        if (kbFill) {
+            let dir = 1, pos = 40;
+            setInterval(() => {
+                pos += dir * 0.4;
+                if (pos > 80 || pos < 20) dir *= -1;
+                kbFill.style.left = pos + '%';
+                document.querySelector('.kb-val').textContent = Math.round(50 + pos * 2) + ' KB';
+            }, 50);
+        }
+
+        // Animate AI progress bar
+        const aiFill = document.querySelector('.pp-ai-fill');
+        if (aiFill) {
+            let progress = 0;
+            function animateAI() {
+                progress = 0;
+                aiFill.style.transition = 'none';
+                aiFill.style.width = '0%';
+                setTimeout(() => {
+                    aiFill.style.transition = 'width 2.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                    aiFill.style.width = '85%';
+                }, 200);
+                setTimeout(animateAI, 4000);
+            }
+            animateAI();
+        }
+    </script>
+
+    <style>
+        /* ── Tool Card Visuals ─────────────────── */
+        .tool-card-visual {
+            width: 100%;
+            height: 170px;
+            border-radius: 18px;
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(168,85,247,0.06));
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .tool-card:hover .tool-card-visual { transform: scale(1.02); }
+        .tool-card-visual-inner {
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 1.25rem;
+            gap: 0.75rem;
+        }
+
+        /* Passport Preview */
+        .passport-photo-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 52px);
+            gap: 8px;
+        }
+        .pp-slot {
+            width: 52px; height: 64px;
+            border-radius: 6px;
+            border: 1.5px dashed rgba(99,102,241,0.4);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem;
+            color: var(--text-muted);
+        }
+        .pp-slot.filled {
+            background: linear-gradient(135deg, #e0e7ff, #ede9fe);
+            border-style: solid;
+            border-color: rgba(99,102,241,0.3);
+            color: var(--primary);
+        }
+        [data-theme="dark"] .pp-slot.filled {
+            background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.12));
+        }
+        .pp-slot.ai-glow {
+            box-shadow: 0 0 0 2px var(--primary), 0 0 12px rgba(99,102,241,0.4);
+            animation: aiPulse 2s infinite;
+        }
+        @keyframes aiPulse {
+            0%, 100% { box-shadow: 0 0 0 2px var(--primary), 0 0 10px rgba(99,102,241,0.35); }
+            50% { box-shadow: 0 0 0 2px var(--primary), 0 0 20px rgba(99,102,241,0.6); }
+        }
+        .pp-badge-row {
+            display: flex; gap: 0.4rem;
+        }
+        .pp-badge {
+            font-size: 0.68rem; font-weight: 700;
+            padding: 0.2rem 0.5rem;
+            background: var(--primary-glow);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 50px;
+            color: var(--primary);
+        }
+        .pp-ai-bar {
+            display: flex; align-items: center; gap: 0.5rem;
+            width: 100%;
+            font-size: 0.7rem; color: var(--text-muted); font-weight: 500;
+        }
+        .pp-ai-bar i { color: var(--primary); font-size: 0.9rem; }
+        .pp-ai-progress {
+            flex: 1; height: 4px;
+            background: rgba(99,102,241,0.15);
+            border-radius: 50px; overflow: hidden;
+        }
+        .pp-ai-fill {
+            height: 100%; width: 0%;
+            background: linear-gradient(90deg, var(--primary), #a855f7);
+            border-radius: 50px;
+        }
+
+        /* Converter Preview */
+        .converter-formats {
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .fmt-pill {
+            padding: 0.3rem 0.7rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+        .fmt-pill.jpg { background: rgba(245,158,11,0.15); color: #d97706; border: 1px solid rgba(245,158,11,0.3); }
+        .fmt-pill.png { background: rgba(99,102,241,0.15); color: var(--primary); border: 1px solid rgba(99,102,241,0.3); }
+        .fmt-pill.webp { background: rgba(16,185,129,0.15); color: #059669; border: 1px solid rgba(16,185,129,0.3); }
+        .fmt-pill.pdf  { background: rgba(239,68,68,0.15); color: #dc2626; border: 1px solid rgba(239,68,68,0.3); }
+        .fmt-arrow { font-size: 0.9rem; color: var(--text-muted); }
+
+        .kb-control {
+            width: 100%;
+            background: rgba(99,102,241,0.06);
+            border: 1px solid rgba(99,102,241,0.15);
+            border-radius: 10px;
+            padding: 0.6rem 0.8rem;
+        }
+        .kb-label {
+            display: flex; align-items: center; gap: 0.35rem;
+            font-size: 0.7rem; color: var(--text-muted); font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+        .kb-label i { color: var(--primary); }
+        .kb-bar {
+            display: flex; align-items: center; gap: 0.6rem;
+        }
+        .kb-track {
+            flex: 1; height: 6px;
+            background: rgba(99,102,241,0.15);
+            border-radius: 50px; position: relative;
+        }
+        .kb-thumb {
+            position: absolute;
+            left: 40%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 14px; height: 14px;
+            background: linear-gradient(135deg, var(--primary), #a855f7);
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(99,102,241,0.5);
+            transition: left 0.05s linear;
+        }
+        .kb-val {
+            font-size: 0.75rem; font-weight: 700;
+            color: var(--primary); white-space: nowrap;
+            min-width: 50px; text-align: right;
+        }
+
+        /* ── ID Card Printer Preview ── */
+        .idcard-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: 0.75rem;
+        }
+        .idcard-mock-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 90px);
+            gap: 12px;
+        }
+        .idcard-mock-slot {
+            width: 90px; height: 57px;
+            border-radius: 6px;
+            position: relative;
+            background: linear-gradient(135deg, #e0e7ff, #ede9fe);
+            border: 1.5px solid rgba(99, 102, 241, 0.3);
+            display: flex; align-items: center; justify-content: center;
+        }
+        [data-theme="dark"] .idcard-mock-slot {
+            background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(168,85,247,0.12));
+            border-color: rgba(99, 102, 241, 0.25);
+        }
+        .idcard-mock-slot.back-glow {
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+            border-color: rgba(168, 85, 247, 0.3);
+        }
+        .mock-card-face {
+            width: 100%; height: 100%;
+            padding: 5px;
+            display: flex; flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+        .mock-card-header {
+            display: flex; gap: 4px;
+            align-items: center;
+        }
+        .mock-avatar {
+            width: 14px; height: 18px;
+            border-radius: 2px;
+            background: rgba(99, 102, 241, 0.4);
+        }
+        .mock-lines {
+            display: flex; flex-direction: column; gap: 2px;
+            flex: 1;
+        }
+        .mock-line-title {
+            width: 25px; height: 3px;
+            background: rgba(99, 102, 241, 0.6);
+            border-radius: 1px;
+        }
+        .mock-line-sub {
+            width: 35px; height: 2px;
+            background: rgba(99, 102, 241, 0.4);
+            border-radius: 1px;
+        }
+        .mock-card-barcode {
+            width: 100%; height: 4px;
+            background: repeating-linear-gradient(90deg, rgba(99,102,241,0.5), rgba(99,102,241,0.5) 1px, transparent 1px, transparent 3px);
+            margin-top: auto;
+        }
+        .mock-lines-back {
+            display: flex; flex-direction: column; gap: 3px;
+            margin-top: 4px;
+        }
+        .mock-line-full {
+            width: 100%; height: 2px;
+            background: rgba(168, 85, 247, 0.4);
+            border-radius: 1px;
+        }
+        .face-lbl {
+            position: absolute;
+            font-size: 5px;
+            font-weight: 800;
+            bottom: 4px; right: 4px;
+            color: rgba(99, 102, 241, 0.6);
+            letter-spacing: 0.05em;
+        }
+        .mock-crop-mark {
+            position: absolute;
+            width: 4px; height: 4px;
+            border-color: rgba(99,102,241,0.6);
+            border-style: solid;
+            pointer-events: none;
+        }
+        .mock-crop-mark.tl { top: -2px; left: -2px; border-width: 0.5px 0 0 0.5px; }
+        .mock-crop-mark.tr { top: -2px; right: -2px; border-width: 0.5px 0.5px 0 0; }
+        .mock-crop-mark.bl { bottom: -2px; left: -2px; border-width: 0 0 0.5px 0.5px; }
+        .mock-crop-mark.br { bottom: -2px; right: -2px; border-width: 0 0.5px 0.5px 0; }
+        
+        .id-print-bar {
+            display: flex; align-items: center; gap: 0.4rem;
+            width: 100%;
+            font-size: 0.7rem; color: var(--text-muted); font-weight: 500;
+        }
+        .id-print-bar i { color: var(--primary); font-size: 0.9rem; }
+    </style>
+</body>
+</html>

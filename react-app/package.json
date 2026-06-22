@@ -1,0 +1,28 @@
+{
+  "name": "react-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.12"
+  },
+  "dependencies": {
+    "@imgly/background-removal": "^1.7.0",
+    "cropperjs": "^2.1.1",
+    "jspdf": "^4.2.1",
+    "jszip": "^3.10.1",
+    "onnxruntime-web": "^1.27.0",
+    "react-router-dom": "^7.18.0",
+    "react-tsparticles": "^2.12.2",
+    "tsparticles": "^2.12.0"
+  }
+}

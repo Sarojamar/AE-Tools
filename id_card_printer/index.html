@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <!-- Analytics centralized in global-nav.js -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro ID Card Printer — Free Online A4 & PVC Layout Tool | BGrade</title>
+    <meta name="title" content="Pro ID Card Printer — Free Online A4 & PVC Layout Tool | BGrade">
+    <meta name="description" content="Convert Aadhaar, PAN, Voter ID, and other documents to perfect ID card sizes (CR80) online. 5-card A4 sheet builder, AI crop helpers, and clean document scan enhancements. 100% private, free, & secure.">
+    <meta name="keywords" content="id card print, format aadhaar card, pan card crop, voter id size, print id cards on a4, pvc card print tool, free online id card maker, bgrade id card printer, document print designer">
+    <meta name="author" content="BGrade">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://bgrade.in/id_card_printer/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://bgrade.in/id_card_printer/">
+    <meta property="og:title" content="Pro ID Card Printer — Free Online A4 & PVC Layout Tool | BGrade">
+    <meta property="og:description" content="Crop and align Aadhaar, PAN, and Voter ID cards to perfect standard CR80 print sizes on A4 sheets. 100% client-side privacy.">
+    <meta property="og:image" content="../og-image.png">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://bgrade.in/id_card_printer/">
+    <meta name="twitter:title" content="Pro ID Card Printer — Free Online A4 & PVC Layout Tool | BGrade">
+    <meta name="twitter:description" content="Crop and align Aadhaar, PAN, and Voter ID cards to perfect standard CR80 print sizes on A4 sheets. 100% client-side privacy.">
+    <meta name="twitter:image" content="../og-image.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../global-nav.css">
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+</head>
+<body>
+    <div id="global-navbar-container"></div>
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Fullscreen Workspace -->
+    <main class="dashboard-workspace">
+        
+        <!-- LEFT PANEL: CONTROL SIDEBAR -->
+        <aside class="control-sidebar">
+
+            <!-- Scrollable Sidebar Content -->
+            <div class="sidebar-scrollable-content">
+                
+                <!-- 1. SELECT TYPE -->
+                <section class="sidebar-section">
+                    <div class="section-title-row">
+                        <h3>1. Select Type</h3>
+                        <span class="badge-free-pro">Free &bull; Pro</span>
+                    </div>
+                    <div class="type-selectors-grid">
+                        <button class="type-btn active" id="type-idcard" data-type="stacked">
+                            <i class="ph ph-identification-card"></i>
+                            <span>ID Card</span>
+                        </button>
+                        <button class="type-btn" id="type-a4page" data-type="side-by-side">
+                            <i class="ph ph-note"></i>
+                            <span>A4 Page</span>
+                        </button>
+                        <button class="type-btn" id="type-pvc" data-type="pvc">
+                            <i class="ph ph-sim-card"></i>
+                            <span>PVC</span>
+                        </button>
+                        <button class="type-btn" id="type-custom" data-type="custom">
+                            <i class="ph ph-frame-corners"></i>
+                            <span>Custom</span>
+                        </button>
+                    </div>
+                    <div class="checkbox-row" style="margin-top:0.75rem;">
+                        <input type="checkbox" id="single-side-mode">
+                        <label for="single-side-mode">Single Side Mode</label>
+                    </div>
+                </section>
+
+                <!-- 2. PRINT QUEUE -->
+                <section class="sidebar-section">
+                    <div class="section-title-row">
+                        <h3>2. Print Queue</h3>
+                        <span class="badge" id="active-page-badge">Page 1</span>
+                        <button class="btn-text btn-danger-text" id="btn-reset-sheet" style="font-size:0.75rem;"><i class="ph ph-trash-simple"></i> Reset All</button>
+                    </div>
+                    
+                    <!-- Page Cards List -->
+                    <div class="queue-cards-wrapper">
+                        <div class="queue-cards" id="queue-cards-list">
+                            <div class="empty-queue-text">No cards loaded on sheet</div>
+                        </div>
+                    </div>
+
+                    <!-- Page Actions -->
+                    <div class="page-queue-actions">
+                        <button class="btn btn-sm btn-outline-primary" id="btn-add-page">
+                            <i class="ph ph-plus"></i> Add Page
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" id="btn-delete-page">
+                            <i class="ph ph-trash"></i> Delete Page
+                        </button>
+                    </div>
+                </section>
+
+                <!-- 3. PRINT SPACING & MARGINS -->
+                <section class="sidebar-section settings-section">
+                    <div class="section-title-row">
+                        <h3>3. Spacing Settings</h3>
+                    </div>
+                    <div class="settings-sliders">
+                        <div class="slider-row">
+                            <span>Margin (mm)</span>
+                            <input type="range" id="sheet-margin" min="5" max="30" value="10">
+                            <span class="val-display" id="sheet-margin-val">10mm</span>
+                        </div>
+                        <div class="slider-row" style="margin-top:0.5rem;">
+                            <span>Gap Horiz (mm)</span>
+                            <input type="range" id="card-gap" min="0" max="25" value="5">
+                            <span class="val-display" id="card-gap-val">5mm</span>
+                        </div>
+                        <div class="slider-row" style="margin-top:0.5rem;">
+                            <span>Gap Vert (mm)</span>
+                            <input type="range" id="card-gap-y" min="0" max="25" value="5">
+                            <span class="val-display" id="card-gap-y-val">5mm</span>
+                        </div>
+                        <div class="checkbox-row" style="margin-top:0.75rem;">
+                            <input type="checkbox" id="show-crop-marks" checked>
+                            <label for="show-crop-marks">Add Corner Crop Marks</label>
+                        </div>
+                        <div class="checkbox-row">
+                            <input type="checkbox" id="card-border" checked>
+                            <label for="card-border">Thin Card Borders</label>
+                        </div>
+                        <div class="checkbox-row">
+                            <input type="checkbox" id="rounded-corners" checked>
+                            <label for="rounded-corners">Rounded corners</label>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- EXPORT & PRINT -->
+                <div class="sidebar-footer-export">
+                    <div class="export-header-row">
+                        <h4>Export & Print</h4>
+                        <span class="badge badge-hd-pro"><i class="ph ph-crown-simple"></i> HD PRO UNLOCKED</span>
+                    </div>
+                    <div class="export-buttons-row">
+                        <button class="export-btn" id="btn-download-jpg" title="Download JPG">
+                            <i class="ph ph-image"></i>
+                            <span>JPG</span>
+                        </button>
+                        <button class="export-btn" id="btn-download-pdf" title="Download PDF">
+                            <i class="ph ph-file-pdf"></i>
+                            <span>PDF</span>
+                        </button>
+                        <button class="export-btn active" id="btn-print-sheet" title="Print Layout">
+                            <i class="ph ph-printer"></i>
+                            <span>Print All</span>
+                        </button>
+                    </div>
+                    <p class="export-footer-desc">Privacy-first browser computing. Files never leave your local device.</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- RIGHT PANEL: INTERACTIVE CANVAS WORKSPACE -->
+        <section class="canvas-workspace">
+            
+
+
+            <!-- Interactive Zoom Area -->
+            <div class="sheet-scroller-area">
+                <!-- Floating Zoom Toolbar -->
+                <div class="floating-zoom-hud">
+                    <button class="zoom-btn" id="btn-zoom-out"><i class="ph ph-minus"></i></button>
+                    <span id="zoom-level">60%</span>
+                    <button class="zoom-btn" id="btn-zoom-in"><i class="ph ph-plus"></i></button>
+                </div>
+
+                <div class="a4-sheet-container">
+                    <div class="virtual-a4-page" id="a4-page">
+                        <!-- Cards are rendered dynamically -->
+                        <div class="no-cards-msg">
+                            <i class="ph ph-files"></i>
+                            <h3>Workspace is empty</h3>
+                            <p>Upload scans to the Front/Back dropzones. Default crops will align automatically.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FIGMA-LIKE CROP EDITOR SLIDE PANEL (Active on Card click) -->
+            <div class="editor-backdrop" id="editor-backdrop"></div>
+            <aside class="crop-editor-slidepanel" id="crop-editor-panel">
+                <div class="slidepanel-header">
+                    <h4 id="editor-title"><i class="ph ph-crop"></i> Card Editor</h4>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" id="btn-apply-editor" title="Apply adjustments">
+                            Apply <i class="ph ph-check"></i>
+                        </button>
+                        <button class="btn-toggle-maximize" id="btn-delete-card-active" title="Delete Card Set" style="color: #ef4444; background: rgba(239, 68, 68, 0.08); border: none;">
+                            <i class="ph ph-trash"></i>
+                        </button>
+                        <button class="btn-toggle-maximize" id="btn-maximize-editor" title="Maximize Screen"><i class="ph ph-corners-out"></i></button>
+                        <button class="btn-close-slidepanel" id="btn-close-editor" title="Close"><i class="ph ph-x"></i></button>
+                    </div>
+                </div>
+                
+                <div class="slidepanel-scrollable-content">
+                    <!-- Crop Viewport -->
+                    <div class="editor-viewport-wrapper">
+                        <div class="crop-viewport" id="editor-viewport">
+                            <!-- Canvas & Crop box loaded dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Slide Panel settings group -->
+                    <div class="slidepanel-controls-group" id="editor-controls-group">
+                        <!-- Fine-Tune Crop (Nudges) -->
+                        <div class="control-group">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label>Fine-Tune Crop Box</label>
+                                <button class="btn-text" id="btn-maximize-editor-body" title="Maximize crop screen"><i class="ph ph-corners-out"></i> Big Screen</button>
+                            </div>
+                            <div class="nudge-controls-wrapper">
+                                <div class="nudge-grid">
+                                    <button class="btn-nudge" id="btn-nudge-up" title="Move Up"><i class="ph ph-arrow-up"></i></button>
+                                    <button class="btn-nudge" id="btn-nudge-left" title="Move Left"><i class="ph ph-arrow-left"></i></button>
+                                    <button class="btn-nudge" id="btn-nudge-right" title="Move Right"><i class="ph ph-arrow-right"></i></button>
+                                    <button class="btn-nudge" id="btn-nudge-down" title="Move Down"><i class="ph ph-arrow-down"></i></button>
+                                </div>
+                                <div class="nudge-scale">
+                                    <button class="btn-nudge" id="btn-nudge-shrink" title="Shrink Frame"><i class="ph ph-minus"></i></button>
+                                    <span>Crop Scale</span>
+                                    <button class="btn-nudge" id="btn-nudge-grow" title="Grow Frame"><i class="ph ph-plus"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Preset selector -->
+                        <div class="control-group">
+                            <label>Auto-Crop Preset</label>
+                            <div class="presets-row" style="flex-wrap: wrap; gap: 0.35rem;">
+                                <button class="btn btn-sm btn-preset active" id="btn-preset-cr80">CR80 Sizing</button>
+                                <button class="btn btn-sm btn-preset" id="btn-preset-aadhaar-front">Aadhaar Front</button>
+                                <button class="btn btn-sm btn-preset" id="btn-preset-aadhaar-back">Aadhaar Back</button>
+                                <button class="btn btn-sm btn-preset" id="btn-preset-pan">PAN Card</button>
+                                <button class="btn btn-sm btn-preset" id="btn-preset-custom">Free Custom</button>
+                            </div>
+                        </div>
+
+                        <!-- Filters -->
+                        <div class="control-group">
+                            <label>Document Scan Filters</label>
+                            <div class="filters-row">
+                                <button class="btn btn-sm btn-filter active" id="btn-filter-none">Original</button>
+                                <button class="btn btn-sm btn-filter" id="btn-filter-document" title="Enhance text and clear shadows">Scan Document</button>
+                                <button class="btn btn-sm btn-filter" id="btn-filter-mono">B&W text</button>
+                            </div>
+                            <div class="filters-row" style="margin-top: 0.4rem;">
+                                <button class="btn btn-sm btn-filter" id="btn-filter-enhance" title="Auto color enhance contrast"><i class="ph ph-sparkle"></i> Auto-Enhance</button>
+                                <button class="btn btn-sm btn-filter" id="btn-filter-invert" title="Invert document scan colors"><i class="ph ph-swap"></i> Invert Colors</button>
+                            </div>
+                        </div>
+
+                        <!-- Custom enhancements -->
+                        <div class="control-group">
+                            <div class="sliders-title" style="display: flex; justify-content: space-between; align-items: center;">
+                                <label>Image Settings</label>
+                                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                    <button class="btn-text" id="btn-center-crop" title="Center the crop area">Center Crop</button>
+                                    <span style="color: var(--text-muted); font-size: 0.8rem;">|</span>
+                                    <button class="btn-text" id="btn-reset-filters">Reset <i class="ph ph-arrows-counter-clockwise"></i></button>
+                                </div>
+                            </div>
+                            
+                            <div class="slider-row">
+                                <span>Brightness</span>
+                                <input type="range" id="slider-brightness" min="50" max="150" value="100">
+                                <span class="val-display" id="val-brightness">100%</span>
+                            </div>
+                            <div class="slider-row">
+                                <span>Contrast</span>
+                                <input type="range" id="slider-contrast" min="50" max="150" value="100">
+                                <span class="val-display" id="val-contrast">100%</span>
+                            </div>
+                            <div class="slider-row">
+                                <span>Saturation</span>
+                                <input type="range" id="slider-saturate" min="0" max="200" value="100">
+                                <span class="val-display" id="val-saturate">100%</span>
+                            </div>
+                        </div>
+
+                        <!-- Rotation & Flip -->
+                        <div class="control-group">
+                            <label>Transform & Mirror</label>
+                            <div class="rotate-btns" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem;">
+                                <button class="btn btn-sm btn-outline" id="btn-rotate-ccw" style="padding: 0.45rem 0.25rem;"><i class="ph ph-arrow-counter-clockwise"></i> Rotate L</button>
+                                <button class="btn btn-sm btn-outline" id="btn-rotate-cw" style="padding: 0.45rem 0.25rem;"><i class="ph ph-arrow-clockwise"></i> Rotate R</button>
+                                <button class="btn btn-sm btn-outline" id="btn-flip-h" style="padding: 0.45rem 0.25rem;" title="Mirror horizontally"><i class="ph ph-swap"></i> Flip Horiz</button>
+                                <button class="btn btn-sm btn-outline" id="btn-flip-v" style="padding: 0.45rem 0.25rem;" title="Mirror vertically"><i class="ph ph-flip-vertical"></i> Flip Vert</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </section>
+    </main>
+
+    <!-- JS dependencies and app execution -->
+    <script src="../global-nav.js" defer></script>
+    <script src="js/app.js" defer></script>
+</body>
+</html>
