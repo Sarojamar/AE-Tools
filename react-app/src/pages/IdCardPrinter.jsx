@@ -18,7 +18,7 @@ export default function IdCardPrinter() {
 
     // Load the ID card engine script and initialize
     const script = document.createElement('script')
-    script.src = import.meta.env.BASE_URL + 'id-card-app.js'
+    script.src = import.meta.env.BASE_URL + 'id-card-app.js?v=' + Date.now()
     script.onload = () => {
       if (window.__bgradeIdCardInit) {
         window.__bgradeIdCardInit()
