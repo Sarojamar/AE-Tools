@@ -187,7 +187,7 @@ export default function Home() {
           <Link to="/file-converter" className="tool-card animate-up" id="card-converter">
             <div className="spotlight-glow"></div>
             <span className="tool-card-badge">
-              <i className="ph ph-wifi-slash"></i> Works Offline
+              <i className="ph ph-cpu"></i> On-Device Processing
             </span>
             <div className="tool-card-content">
               <div className="tool-card-visual">
