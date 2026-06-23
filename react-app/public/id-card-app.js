@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BGrade Pro ID Card Printer - Single-View Dashboard Logic (Reference layout)
  * 100% Client-Side Processing, Privacy-First ID card formatter and print sheets generator.
  */
@@ -7,7 +7,7 @@
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
 // Application State
-const state = {
+var state = {
     // Array of card sets
     savedCards: [], // { id, name, frontSource, backSource, frontImg, backImg, frontCrop, backCrop, frontFilters, backFilters, frontPreset, backPreset }
     
@@ -48,15 +48,15 @@ const state = {
 };
 
 // Standard Card Sizing
-const CARD_RATIO = 85.6 / 54;
-const A4_WIDTH_MM = 210;
-const A4_HEIGHT_MM = 297;
-const A4_PX_PER_MM = 595 / A4_WIDTH_MM; // ~2.833 px/mm
+var CARD_RATIO = 85.6 / 54;
+var A4_WIDTH_MM = 210;
+var A4_HEIGHT_MM = 297;
+var A4_PX_PER_MM = 595 / A4_WIDTH_MM; // ~2.833 px/mm
 
 // DOM Elements
-const toastContainer = document.getElementById('toast-container');
-const a4Page = document.getElementById('a4-page');
-const cropPanel = document.getElementById('crop-editor-panel');
+var toastContainer;
+var a4Page;
+var cropPanel;
 
 // Global error logging for BGrade ID Card Printer diagnostics
 window.onerror = function(message, source, lineno, colno, error) {
@@ -72,6 +72,10 @@ window.onerror = function(message, source, lineno, colno, error) {
 
 // Page Load - called by React useEffect after DOM mount
 window.__bgradeIdCardInit = function() {
+    toastContainer = document.getElementById('toast-container');
+    a4Page = document.getElementById('a4-page');
+    cropPanel = document.getElementById('crop-editor-panel');
+
     setupEventListeners();
     autoFitZoom();
     renderA4Sheet();
@@ -414,7 +418,7 @@ function setupEventListeners() {
 }
 
 // Setup drag and drop elements
-const LAYOUT_LIMITS = {
+var LAYOUT_LIMITS = {
     'stacked': 4,
     'side-by-side': 5,
     'pvc': 1,
