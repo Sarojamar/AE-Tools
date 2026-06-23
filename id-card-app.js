@@ -1604,8 +1604,19 @@ function autoFitZoom() {
         const workspace = document.querySelector('.sheet-scroller-area');
         if (!workspace) return;
         
-        // Default preview page zoom set to 110% (1.1) as requested
-        state.zoom = 1.1;
+        const workspaceW = workspace.clientWidth;
+        
+        // On smaller screens, fit to width. Provide 40px padding (20px each side)
+        if (workspaceW < 650) {
+            let newZoom = (workspaceW - 40) / 595;
+            if (newZoom > 1.1) newZoom = 1.1;
+            if (newZoom < 0.25) newZoom = 0.25;
+            state.zoom = newZoom;
+        } else {
+            // Default preview page zoom set to 110% (1.1)
+            state.zoom = 1.1;
+        }
+        
         updateZoom();
     } catch (err) {
         console.error(err);
