@@ -120,11 +120,6 @@ export default function Home() {
 
           <div className="stats-row">
             <div className="stat-item">
-              <span className="stat-value">0</span>
-              <span className="stat-label">Data Uploaded</span>
-            </div>
-            <div className="stat-divider"></div>
-            <div className="stat-item">
               <span className="stat-value">50+</span>
               <span className="stat-label">Size Presets</span>
             </div>
