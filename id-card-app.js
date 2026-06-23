@@ -28,10 +28,10 @@ var state = {
     // Settings
     singleSideMode: false,
     sheetSettings: {
-        layout: 'stacked', // stacked, side-by-side, pvc, custom
+        layout: 'side-by-side', // stacked, side-by-side, pvc, custom
         margin: 10, // mm
-        gap: 5, // mm
-        rowGap: 5, // mm
+        gap: 6, // mm
+        rowGap: 6, // mm
         showCropMarks: true,
         border: true,
         roundedCorners: true
