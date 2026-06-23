@@ -175,15 +175,20 @@ export default function PassportPhotoMaker() {
 
     // ── Live Preview Sheet Generation ─────────────────────────────────
     function renderLivePreview() {
-      if (!state.cropper) return
-      const pc = $('output-canvas'); if (!pc) return
+      const pc = $('output-canvas')
+      if (pc) renderCanvas(pc, 96)
+    }
 
-      // Get the currently cropped area as a canvas
-      // We don't use fillColor here because we will explicitly draw the bg color
-      // on the final print sheet behind the image. This is standard alpha compositing.
+    function renderCanvas(targetCanvas, DPI) {
+      if (!state.cropper) return
+      if (!targetCanvas) return
+
+      // We want the cropped canvas to be high-res enough for 300 DPI print if needed.
+      // At 300 DPI, 2 inches (5cm) is 600px.
+      // We'll crop at 1200px width so it is crystal clear even at 300 DPI.
       const primaryCanvas = state.cropper.getCroppedCanvas({
-        width: 600,
-        height: Math.round(600 * state.photoH / state.photoW)
+        width: 1200,
+        height: Math.round(1200 * state.photoH / state.photoW)
       })
       if (!primaryCanvas) return
 
@@ -191,9 +196,11 @@ export default function PassportPhotoMaker() {
       const photoSources = [primaryCanvas, ...state.multiPhotos.map(p => p.canvas)]
 
       // Sync the cropper editor background colour so the user sees it in the editor
-      syncCropperBg(state.bgColor)
+      if (targetCanvas.id === 'output-canvas') {
+        syncCropperBg(state.bgColor)
+      }
 
-      const DPI = 96; const CM_TO_PX = DPI / 2.54
+      const CM_TO_PX = DPI / 2.54
       const pW = Math.round(state.paperW * CM_TO_PX); const pH = Math.round(state.paperH * CM_TO_PX)
       const photoW = Math.round(state.photoW * CM_TO_PX); const photoH = Math.round(state.photoH * CM_TO_PX)
       const margin = Math.round(state.margin * CM_TO_PX); const gap = Math.round(state.gap * CM_TO_PX)
@@ -208,8 +215,8 @@ export default function PassportPhotoMaker() {
       })
       const totalSlots = queue.length
       
-      pc.width = pW; pc.height = pH
-      const ctx = pc.getContext('2d')
+      targetCanvas.width = pW; targetCanvas.height = pH
+      const ctx = targetCanvas.getContext('2d')
       
       // Draw paper background (white sheet)
       ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, pW, pH)
@@ -223,8 +230,6 @@ export default function PassportPhotoMaker() {
           const srcCanvas = queue[count]
           
           // 1. Draw the selected background color
-          // If the photo has a transparent background (from AI BG Removal),
-          // this color will naturally show through the transparent areas.
           if (state.bgColor && state.bgColor !== 'transparent') {
             ctx.fillStyle = state.bgColor
             ctx.fillRect(x, y, photoW, photoH)
@@ -242,8 +247,9 @@ export default function PassportPhotoMaker() {
           
           // 3. Border
           if (state.borderWidth > 0) { 
+            // Scale border width to DPI (if UI border is meant for 96 DPI screen, scale to target DPI)
             ctx.strokeStyle = state.borderColor; 
-            ctx.lineWidth = state.borderWidth; 
+            ctx.lineWidth = Math.max(1, Math.round(state.borderWidth * (DPI / 96))); 
             ctx.strokeRect(x, y, photoW, photoH) 
           }
           
@@ -505,19 +511,29 @@ export default function PassportPhotoMaker() {
 
     // ── Final Download ────────────────────────────────────────────────
     $('btn-download-png').onclick = () => {
-      const canvas=$('output-canvas'); if (!canvas.width) { showToast('Canvas empty.','error'); return }
+      if (!state.cropper) { showToast('No image to export.', 'error'); return }
+      const exportCanvas = document.createElement('canvas')
+      renderCanvas(exportCanvas, 300)
       const link=document.createElement('a'); link.download='AmritEnterprises-passport-photos.png'
-      link.href=canvas.toDataURL('image/png'); link.click()
+      link.href=exportCanvas.toDataURL('image/png'); link.click()
       showToast('PNG downloaded!','success')
     }
     
     $('btn-download-pdf').onclick = () => {
-      const canvas=$('output-canvas'); if (!canvas.width) { showToast('Canvas empty.','error'); return }
-      const {jsPDF}=window.jspdf
-      const pdf=new jsPDF({orientation:state.paperH>state.paperW?'portrait':'landscape',unit:'cm',format:[state.paperW,state.paperH]})
-      pdf.addImage(canvas.toDataURL('image/jpeg',0.95),'JPEG',0,0,state.paperW,state.paperH)
-      pdf.save('AmritEnterprises-passport-photos.pdf')
-      showToast('PDF downloaded!','success')
+      if (!state.cropper) { showToast('No image to export.', 'error'); return }
+      showToast('Generating high-resolution PDF...', 'info')
+      // Yield thread so toast renders
+      setTimeout(() => {
+        const exportCanvas = document.createElement('canvas')
+        renderCanvas(exportCanvas, 300)
+        const {jsPDF}=window.jspdf
+        const pdf=new jsPDF({orientation:state.paperH>state.paperW?'portrait':'landscape',unit:'cm',format:[state.paperW,state.paperH]})
+        
+        // Use PNG to ensure zero compression/lossless quality as requested
+        pdf.addImage(exportCanvas.toDataURL('image/png'),'PNG',0,0,state.paperW,state.paperH, '', 'NONE')
+        pdf.save('AmritEnterprises-passport-photos.pdf')
+        showToast('PDF downloaded!','success')
+      }, 10)
     }
     
     $('btn-change-photo').onclick = () => {
