@@ -25,6 +25,7 @@ const TOOLS = [
 
 export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const [theme, setTheme] = useState(() => localStorage.getItem('amrit-theme') || 'light')
@@ -124,9 +125,39 @@ export default function Navbar() {
         <button className="theme-toggle" id="theme-toggle" title="Toggle theme" onClick={toggleTheme}>
           <i className={`ph ${theme === 'dark' ? 'ph-sun' : 'ph-moon'}`} id="theme-icon"></i>
         </button>
-        <button className="mobile-menu-btn" id="mobile-menu-btn" aria-label="Menu">
-          <i className="ph ph-list"></i>
+        <button className="mobile-menu-btn" id="mobile-menu-btn" aria-label="Menu" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+          <i className={`ph ${mobileMenuOpen ? 'ph-x' : 'ph-list'}`}></i>
         </button>
+      </div>
+
+      {/* Mobile Menu Overlay */}
+      <div className={`mobile-menu-overlay ${mobileMenuOpen ? 'open' : ''}`}>
+        <div className="mobile-search-wrapper">
+          <i className="ph ph-magnifying-glass search-icon"></i>
+          <input
+            type="text"
+            className="nav-search"
+            placeholder="Search tools…"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <div className="mobile-tools-list">
+          {(searchQuery.trim() ? filteredTools : TOOLS).map(t => (
+            <Link
+              key={t.href}
+              to={t.href}
+              className="tool-item"
+              onClick={() => { setMobileMenuOpen(false); setSearchQuery('') }}
+            >
+              <i className={t.icon}></i>
+              <div>
+                <strong>{t.label}</strong>
+                <p>{t.desc}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
     </nav>
   )
