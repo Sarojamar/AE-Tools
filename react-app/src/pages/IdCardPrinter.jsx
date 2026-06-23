@@ -63,10 +63,10 @@ export default function IdCardPrinter() {
                 <span className="badge-free-pro">Free &bull; Pro</span>
               </div>
               <div className="type-selectors-grid">
-                <button className="type-btn active" id="type-idcard" data-type="stacked">
+                <button className="type-btn active" id="type-idcard" data-type="side-by-side">
                   <i className="ph ph-identification-card"></i><span>ID Card</span>
                 </button>
-                <button className="type-btn" id="type-a4page" data-type="side-by-side">
+                <button className="type-btn" id="type-a4page" data-type="stacked">
                   <i className="ph ph-note"></i><span>A4 Page</span>
                 </button>
                 <button className="type-btn" id="type-pvc" data-type="pvc">
@@ -119,13 +119,13 @@ export default function IdCardPrinter() {
                 </div>
                 <div className="slider-row" style={{ marginTop: '0.5rem' }}>
                   <span>Gap Horiz (mm)</span>
-                  <input type="range" id="card-gap" min="0" max="25" defaultValue="5" />
-                  <span className="val-display" id="card-gap-val">5mm</span>
+                  <input type="range" id="card-gap" min="0" max="25" defaultValue="6" />
+                  <span className="val-display" id="card-gap-val">6mm</span>
                 </div>
                 <div className="slider-row" style={{ marginTop: '0.5rem' }}>
                   <span>Gap Vert (mm)</span>
-                  <input type="range" id="card-gap-y" min="0" max="25" defaultValue="5" />
-                  <span className="val-display" id="card-gap-y-val">5mm</span>
+                  <input type="range" id="card-gap-y" min="0" max="25" defaultValue="6" />
+                  <span className="val-display" id="card-gap-y-val">6mm</span>
                 </div>
                 <div className="checkbox-row" style={{ marginTop: '0.75rem' }}>
                   <input type="checkbox" id="show-crop-marks" defaultChecked />
