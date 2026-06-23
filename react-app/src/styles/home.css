@@ -520,7 +520,32 @@ h1, h2, h3 { font-family: 'Outfit', sans-serif; }
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 640px) {
   .hub-container { padding: 6.5rem 1rem 3rem; gap: 2.5rem; }
-  .tool-grid { grid-template-columns: 1fr; }
+  .tool-grid { grid-template-columns: 1fr; gap: 1.25rem; }
   .stats-row { gap: 1.25rem; }
   .stat-divider { display: none; }
+
+  /* Better mobile card styling */
+  .tool-card {
+    padding: 1.25rem;
+    gap: 1rem;
+    border-radius: 20px;
+  }
+  .tool-card-visual {
+    height: 140px;
+  }
+  .tool-card-visual-inner {
+    transform: scale(0.9);
+  }
+  .tool-info h2 {
+    font-size: 1.2rem;
+  }
+  .tool-info p {
+    font-size: 0.85rem;
+  }
+  .btn-arrow {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
 }
